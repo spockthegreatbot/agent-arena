@@ -49,13 +49,13 @@ export default function Home() {
 
   return (
     <main className="h-screen w-screen bg-[#0a0a0f] flex overflow-hidden relative">
-      {/* Left: Pixel Office */}
-      <div className="w-3/5 h-full p-3 flex items-center justify-center">
+      {/* Left: Pixel Office — 70% */}
+      <div className="flex-[7] h-full p-2 flex items-center justify-center min-w-0">
         <PixelOffice agents={agents} />
       </div>
 
-      {/* Right: Activity Panel */}
-      <div className="w-2/5 h-full border-l border-[#2a2a3e] flex flex-col">
+      {/* Right: Activity Panel — 30% */}
+      <div className="flex-[3] h-full border-l border-[#2a2a3e] flex flex-col max-w-[380px] min-w-[260px]">
         <ActivityPanel agents={agents} activities={activities} stats={stats} />
       </div>
 
@@ -78,10 +78,10 @@ export default function Home() {
         href="https://github.com/spockthegreatbot/agent-arena"
         target="_blank"
         rel="noopener noreferrer"
-        className="absolute bottom-4 right-4 z-50 px-3 py-2 bg-[#1a1a2e]/90 backdrop-blur-sm border border-[#2a2a3e] rounded-lg text-[11px] text-[#8a8aaa] hover:text-white hover:border-[#4a4a6e] transition-all duration-200 flex items-center gap-2 group"
+        className="absolute bottom-3 right-3 z-50 px-2.5 py-1.5 bg-[#1a1a2e]/90 backdrop-blur-sm border border-[#2a2a3e] rounded-lg text-[10px] text-[#8a8aaa] hover:text-white hover:border-[#4a4a6e] transition-all duration-200 flex items-center gap-2 group"
       >
         <span>🏟️</span>
-        <span className="group-hover:text-white transition-colors">Deploy your own Agent Arena</span>
+        <span className="group-hover:text-white transition-colors">Deploy your own</span>
         <svg className="w-3 h-3 opacity-50 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
         </svg>
