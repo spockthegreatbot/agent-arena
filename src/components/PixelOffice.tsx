@@ -82,6 +82,13 @@ const REST_ROOM_SPOTS = [
   { x: 780, y: 695 }, { x: 870, y: 690 },
 ];
 
+const SERVER_ROOM_SPOTS = [
+  { x: 540, y: 100 }, { x: 620, y: 80 }, { x: 700, y: 100 },
+  { x: 800, y: 80 }, { x: 880, y: 100 },
+  { x: 570, y: 180 }, { x: 660, y: 170 }, { x: 750, y: 180 },
+  { x: 840, y: 170 }, { x: 920, y: 180 },
+];
+
 const MEETING_SPOTS = [
   { x: 130, y: 100 }, { x: 210, y: 80 }, { x: 290, y: 100 },
   { x: 130, y: 160 }, { x: 210, y: 180 }, { x: 290, y: 160 },
@@ -287,6 +294,12 @@ export default function PixelOffice({ agents, activities = [], onAgentClick }: P
       const idx = kitchenAgents.findIndex(a => a.id === agent.id);
       const spot = KITCHEN_SPOTS[idx % KITCHEN_SPOTS.length];
       return { x: spot.x, y: spot.y, state: 'coffee' };
+    }
+    if (room === 'server_room') {
+      const serverAgents = allAgents.filter(a => a.room === 'server_room');
+      const idx = serverAgents.findIndex(a => a.id === agent.id);
+      const spot = SERVER_ROOM_SPOTS[idx % SERVER_ROOM_SPOTS.length];
+      return { x: spot.x, y: spot.y, state: 'standing' };
     }
     if (room === 'game_room') {
       const gameAgents = allAgents.filter(a => a.room === 'game_room');
