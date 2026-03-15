@@ -43,12 +43,17 @@ export interface AgentState {
   room: RoomId;
 }
 
+export type ActivityType = 'regular' | 'task_complete' | 'deploy' | 'alert' | 'scanning' | 'security' | 'interaction';
+
 export interface ActivityItem {
   timestamp: string;
   agentId: string;
   agentName: string;
   agentEmoji: string;
+  agentColor?: string;
   message: string;
+  type: ActivityType;
+  replyToAgent?: string;
 }
 
 export interface SystemStats {

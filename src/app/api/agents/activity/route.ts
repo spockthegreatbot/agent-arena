@@ -1,7 +1,19 @@
 import { NextResponse } from 'next/server';
-import { AGENTS, ActivityItem } from '@/lib/agents';
+import { AGENTS, ActivityItem, ActivityType } from '@/lib/agents';
 import * as fs from 'fs';
 import * as path from 'path';
+
+function classifyMessage(message: string, toolName?: string): ActivityType {
+  const lower = message.toLowerCase();
+  if (toolName === 'exec' && (lower.includes('deploy') || lower.includes('push') || lower.includes('ship'))) return 'deploy';
+  if (lower.includes('deploy') || lower.includes('shipped') || lower.includes('pushed to') || lower.includes('released')) return 'deploy';
+  if (lower.includes('completed') || lower.includes('done') || lower.includes('finished') || lower.includes('✅') || lower.includes('merged')) return 'task_complete';
+  if (lower.includes('error') || lower.includes('failed') || lower.includes('⚠') || lower.includes('crash') || lower.includes('alert') || lower.includes('down')) return 'alert';
+  if (lower.includes('security') || lower.includes('audit') || lower.includes('vulnerability') || lower.includes('cipher') || lower.includes('🛡')) return 'security';
+  if (lower.includes('scan') || lower.includes('checking') || lower.includes('monitoring') || lower.includes('heartbeat') || lower.includes('routine') || lower.includes('cron')) return 'scanning';
+  if (toolName && !['exec', 'write', 'edit'].includes(toolName)) return 'scanning';
+  return 'regular';
+}
 
 let cachedActivities: ActivityItem[] | null = null;
 let cacheTime = 0;
@@ -44,7 +56,9 @@ function extractActivities(): ActivityItem[] {
                   agentId: agent.id,
                   agentName: agent.name,
                   agentEmoji: agent.emoji,
+                  agentColor: agent.color,
                   message: text,
+                  type: classifyMessage(text),
                 });
               }
 
@@ -58,7 +72,9 @@ function extractActivities(): ActivityItem[] {
                       agentId: agent.id,
                       agentName: agent.name,
                       agentEmoji: agent.emoji,
+                      agentColor: agent.color,
                       message: `Using tool: ${fn}`,
+                      type: classifyMessage(`Using tool: ${fn}`, fn),
                     });
                   }
                 }
@@ -99,7 +115,9 @@ function extractActivities(): ActivityItem[] {
                   agentId: 'cron',
                   agentName: 'Cron',
                   agentEmoji: '⏰',
+                  agentColor: '#a78bfa',
                   message: text,
+                  type: 'scanning',
                 });
               }
             } catch { continue; }
