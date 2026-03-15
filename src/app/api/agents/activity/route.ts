@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { AGENTS, ActivityItem, ActivityType } from '@/lib/agents';
+import { isDemoMode, getDemoActivities } from '@/lib/demo-data';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -17,15 +18,15 @@ function classifyMessage(message: string, toolName?: string): ActivityType {
 
 let cachedActivities: ActivityItem[] | null = null;
 let cacheTime = 0;
-const CACHE_TTL = 15000; // 15 seconds
+const CACHE_TTL = 15000;
 
 function extractActivities(): ActivityItem[] {
   const home = process.env.HOME || '/home/linuxuser';
-  const agentsHome = path.join(home, '.openclaw', 'agents');
-  const cronRunsDir = path.join(home, '.openclaw', 'cron', 'runs');
+  const openclawHome = process.env.OPENCLAW_HOME || path.join(home, '.openclaw');
+  const agentsHome = path.join(openclawHome, 'agents');
+  const cronRunsDir = path.join(openclawHome, 'cron', 'runs');
   const activities: ActivityItem[] = [];
 
-  // Scan agent session files
   for (const agent of AGENTS) {
     try {
       const sessionsDir = path.join(agentsHome, agent.id, 'sessions');
@@ -35,7 +36,7 @@ function extractActivities(): ActivityItem[] {
         .filter(f => f.endsWith('.jsonl'))
         .map(f => ({ name: f, mtime: fs.statSync(path.join(sessionsDir, f)).mtime }))
         .sort((a, b) => b.mtime.getTime() - a.mtime.getTime())
-        .slice(0, 3); // Last 3 session files per agent
+        .slice(0, 3);
 
       for (const file of files) {
         try {
@@ -46,10 +47,8 @@ function extractActivities(): ActivityItem[] {
             try {
               const entry = JSON.parse(line);
               
-              // Extract user messages as tasks/requests
               if (entry.role === 'user' && typeof entry.content === 'string' && entry.content.length > 15 && entry.content.length < 200) {
                 const text = entry.content.replace(/\n/g, ' ').substring(0, 120);
-                // Skip system-like messages
                 if (text.startsWith('[') || text.startsWith('Read ') || text.startsWith('HEARTBEAT')) continue;
                 activities.push({
                   timestamp: entry.timestamp || file.mtime.toISOString(),
@@ -62,7 +61,6 @@ function extractActivities(): ActivityItem[] {
                 });
               }
 
-              // Extract tool completions
               if (entry.role === 'assistant' && entry.tool_calls && Array.isArray(entry.tool_calls)) {
                 for (const tc of entry.tool_calls) {
                   const fn = tc?.function?.name;
@@ -92,7 +90,6 @@ function extractActivities(): ActivityItem[] {
     }
   }
 
-  // Scan cron runs
   try {
     if (fs.existsSync(cronRunsDir)) {
       const cronFiles = fs.readdirSync(cronRunsDir)
@@ -127,10 +124,8 @@ function extractActivities(): ActivityItem[] {
     }
   } catch { /* ignore */ }
 
-  // Sort by timestamp, newest first, deduplicate
   activities.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
 
-  // Deduplicate similar messages
   const seen = new Set<string>();
   const unique = activities.filter(a => {
     const key = `${a.agentId}:${a.message.substring(0, 50)}`;
@@ -144,13 +139,22 @@ function extractActivities(): ActivityItem[] {
 
 export async function GET() {
   try {
+    // Demo mode: return sample data
+    if (isDemoMode()) {
+      return NextResponse.json({
+        activities: getDemoActivities(),
+        timestamp: new Date().toISOString(),
+        mode: 'demo',
+      });
+    }
+
     const now = Date.now();
     if (!cachedActivities || now - cacheTime > CACHE_TTL) {
       cachedActivities = extractActivities();
       cacheTime = now;
     }
 
-    return NextResponse.json({ activities: cachedActivities, timestamp: new Date().toISOString() });
+    return NextResponse.json({ activities: cachedActivities, timestamp: new Date().toISOString(), mode: 'live' });
   } catch (err) {
     console.error('[api/agents/activity]', err);
     return NextResponse.json({ error: 'Failed to fetch activities' }, { status: 500 });

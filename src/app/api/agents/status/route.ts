@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { AGENTS, AgentState, AgentStatus, getAgentRoom } from '@/lib/agents';
+import { isDemoMode, getDemoAgentStates } from '@/lib/demo-data';
 import { execSync } from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -76,7 +77,6 @@ function isAgentRunning(agentId: string): boolean {
 function detectMeetings(states: AgentState[]): void {
   const recentlyActive = states.filter(a => a.status === 'active');
   if (recentlyActive.length >= 2) {
-    // If 2+ agents are active within close time, put them in meeting room
     for (const agent of recentlyActive) {
       agent.room = 'meeting_room';
     }
@@ -85,7 +85,17 @@ function detectMeetings(states: AgentState[]): void {
 
 export async function GET() {
   try {
-    const agentsHome = path.join(process.env.HOME || '/home/linuxuser', '.openclaw', 'agents');
+    // Demo mode: return sample data
+    if (isDemoMode()) {
+      return NextResponse.json({
+        agents: getDemoAgentStates(),
+        timestamp: new Date().toISOString(),
+        mode: 'demo',
+      });
+    }
+
+    const openclawHome = process.env.OPENCLAW_HOME || path.join(process.env.HOME || '/home/linuxuser', '.openclaw');
+    const agentsHome = path.join(openclawHome, 'agents');
 
     const states: AgentState[] = AGENTS.map(agent => {
       const sessionsDir = path.join(agentsHome, agent.id, 'sessions');
@@ -138,10 +148,9 @@ export async function GET() {
       };
     });
 
-    // Detect meetings — override room for agents collaborating
     detectMeetings(states);
 
-    return NextResponse.json({ agents: states, timestamp: new Date().toISOString() });
+    return NextResponse.json({ agents: states, timestamp: new Date().toISOString(), mode: 'live' });
   } catch (err) {
     console.error('[api/agents/status]', err);
     return NextResponse.json({ error: 'Failed to fetch agent status' }, { status: 500 });

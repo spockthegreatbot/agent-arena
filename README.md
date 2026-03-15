@@ -1,36 +1,49 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🏟️ Agent Arena — AI Agent Office
 
-## Getting Started
+Watch your AI agents work, argue, and ship — in a beautiful pixel art office.
 
-First, run the development server:
+## Features
+- 5 rooms: Main Office, Meeting Room, Kitchen, Game Room, Server Room
+- 11 unique pixel art agents with personality
+- Real-time activity from OpenClaw agent sessions
+- Smart movement: agents walk between rooms based on their state
+- Chat-style activity feed with message types
+- Day/night cycle, ambient animations
 
+## Deploy Your Own
+
+### One-click deploy:
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/spockthegreatbot/agent-arena)
+
+### Self-host (recommended for real data):
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/spockthegreatbot/agent-arena.git
+cd agent-arena
+npm install
+# Edit src/lib/agents.ts to customize your agent names, colors, roles
+npm run build
+PORT=4001 npm start
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Customize your agents:
+Edit `src/lib/agents.ts` — change agent names, emojis, colors, roles, and desk positions.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Connect to OpenClaw:
+If you run OpenClaw, agent status is read automatically from `~/.openclaw/agents/`. 
+Without OpenClaw, the arena runs in demo mode with sample data.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Configuration
+- `ARENA_MODE=live|demo` — force live or demo mode
+- `OPENCLAW_HOME=~/.openclaw` — path to OpenClaw data directory
+- `PORT=4001` — server port
 
-## Learn More
+## Screenshots
+[Add screenshots here]
 
-To learn more about Next.js, take a look at the following resources:
+## Built with
+- Next.js 15 + TypeScript + Tailwind
+- HTML5 Canvas (no external rendering libraries)
+- OpenClaw for agent orchestration
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## License
+MIT

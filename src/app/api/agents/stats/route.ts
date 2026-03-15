@@ -3,6 +3,7 @@ import { execSync } from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
 import { SystemStats } from '@/lib/agents';
+import { isDemoMode, getDemoStats } from '@/lib/demo-data';
 
 function getUptime(): string {
   try {
@@ -45,7 +46,8 @@ function getDisk(): { used: number; total: number } {
 function getSessionsToday(): number {
   try {
     const home = process.env.HOME || '/home/linuxuser';
-    const agentsDir = path.join(home, '.openclaw', 'agents');
+    const openclawHome = process.env.OPENCLAW_HOME || path.join(home, '.openclaw');
+    const agentsDir = path.join(openclawHome, 'agents');
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     let count = 0;
@@ -68,6 +70,11 @@ function getSessionsToday(): number {
 
 export async function GET() {
   try {
+    // Demo mode: return sample data
+    if (isDemoMode()) {
+      return NextResponse.json(getDemoStats());
+    }
+
     const ram = getRam();
     const disk = getDisk();
 
@@ -77,7 +84,7 @@ export async function GET() {
       ramTotal: ram.total,
       diskUsed: disk.used,
       diskTotal: disk.total,
-      activeAgents: 0, // filled by client from status API
+      activeAgents: 0,
       sessionsToday: getSessionsToday(),
       uptime: getUptime(),
     };

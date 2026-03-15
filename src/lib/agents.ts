@@ -1,14 +1,34 @@
 export interface AgentConfig {
-  id: string;
-  name: string;
-  emoji: string;
-  role: string;
-  model: string;
-  color: string;
-  desk: string;
+  id: string;       // Must match the OpenClaw agent directory name in ~/.openclaw/agents/<id>/
+  name: string;     // Display name shown in the office and activity feed
+  emoji: string;    // Emoji icon for the agent
+  role: string;     // Short role description (e.g. "Full-Stack Dev", "Security")
+  model: string;    // AI model the agent uses (display only)
+  color: string;    // Hex color for the agent's pixel art and UI elements
+  desk: string;     // Desk position identifier in the office layout
   accessory: 'glasses' | 'hat' | 'badge' | 'headphones' | 'scarf' | 'cap' | 'bowtie' | 'visor' | 'antenna' | 'crown' | 'monocle';
 }
 
+/**
+ * ============================================
+ * 🏟️ CUSTOMIZE YOUR AGENTS HERE
+ * ============================================
+ *
+ * Each agent needs:
+ *   - id: matches the OpenClaw agent folder name (e.g. 'dev' → ~/.openclaw/agents/dev/)
+ *   - name: whatever you want to call them
+ *   - emoji: pick any emoji
+ *   - role: short description
+ *   - model: which AI model they use (cosmetic)
+ *   - color: hex color for their pixel art character
+ *   - desk: position in the office ('command', 'dev', 'trading', 'research', 'design',
+ *           'security', 'content', 'strategy', 'engineering', 'pm', 'finance')
+ *   - accessory: visual flair on their pixel character
+ *
+ * To add a new agent: copy any line below and change the values.
+ * To remove one: delete the line.
+ * The office auto-adjusts to however many agents you have.
+ */
 export const AGENTS: AgentConfig[] = [
   { id: 'main', name: 'Spock', emoji: '🖖', role: 'Lead Operator', model: 'Claude Sonnet 4.6', color: '#9333ea', desk: 'command', accessory: 'crown' },
   { id: 'dev', name: 'Scotty', emoji: '🔧', role: 'Full-Stack Dev', model: 'Claude Opus 4.6', color: '#3b82f6', desk: 'dev', accessory: 'glasses' },
