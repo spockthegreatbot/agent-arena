@@ -6,18 +6,31 @@
 import { AGENTS, AgentState, ActivityItem, SystemStats, AgentStatus, RoomId } from './agents';
 
 // Deterministic but varied statuses for demo mode
+// Demo scenario: "Build a landing page for a dog accessories brand"
+// Shows agents in different rooms working on a realistic mission
 const DEMO_STATUSES: { status: AgentStatus; room: RoomId; idleMinutes: number; task: string | null }[] = [
-  { status: 'active', room: 'main_office', idleMinutes: 0, task: 'Coordinating agent tasks and reviewing PRs' },
-  { status: 'active', room: 'main_office', idleMinutes: 0, task: 'Building new dashboard components with React' },
-  { status: 'active', room: 'meeting_room', idleMinutes: 0, task: 'Analyzing BTC/ETH price action for entry signals' },
-  { status: 'idle', room: 'kitchen', idleMinutes: 12, task: 'Compiled research report on AI trends' },
-  { status: 'active', room: 'main_office', idleMinutes: 0, task: 'Designing new landing page mockups' },
-  { status: 'active', room: 'server_room', idleMinutes: 0, task: 'Running security audit on production servers' },
-  { status: 'idle', room: 'game_room', idleMinutes: 25, task: 'Drafted tweet thread about product launch' },
-  { status: 'offline', room: 'rest_room', idleMinutes: 180, task: null },
-  { status: 'active', room: 'main_office', idleMinutes: 0, task: 'Deploying hotfix to staging environment' },
-  { status: 'idle', room: 'kitchen', idleMinutes: 8, task: 'Updated sprint board and priorities' },
-  { status: 'offline', room: 'rest_room', idleMinutes: 300, task: null },
+  // Spock — coordinating from meeting room, briefing the team
+  { status: 'active', room: 'meeting_room', idleMinutes: 0, task: 'Briefing team: "Build a landing page for Happy Beads — dog necklaces brand"' },
+  // Scotty — at his desk, building the site
+  { status: 'active', room: 'main_office', idleMinutes: 0, task: 'Scaffolding Next.js 15 landing page — hero section + product grid' },
+  // Gordon — at trading terminal, scanning markets between tasks
+  { status: 'active', room: 'main_office', idleMinutes: 0, task: 'Scanning 301 Polymarket events — NBA + CS2 + politics' },
+  // Watson — in meeting room with Spock, presenting research
+  { status: 'active', room: 'meeting_room', idleMinutes: 0, task: 'Presenting competitor analysis: Salty Paws, Hypnotic Dog, market gaps' },
+  // Nova — at design desk, creating the visual spec
+  { status: 'active', room: 'main_office', idleMinutes: 0, task: 'Designing hero mockup — warm tones, dog photos, Sunshine Coast vibe' },
+  // Cipher — in server room, auditing the deploy
+  { status: 'active', room: 'server_room', idleMinutes: 0, task: 'Pre-deploy audit: checking dependencies + XSS vectors' },
+  // Oscar — at content desk, writing copy
+  { status: 'active', room: 'main_office', idleMinutes: 0, task: 'Writing hero headline: "Let their true personality shine" — v3 draft' },
+  // Rex — in meeting room, planning the growth strategy
+  { status: 'active', room: 'meeting_room', idleMinutes: 0, task: 'SEO keyword map: "dog necklace australia" + Etsy listing optimization' },
+  // Rook — in server room with Cipher, checking infrastructure
+  { status: 'active', room: 'server_room', idleMinutes: 0, task: 'Configuring Vercel deploy + checking Shopify API integration' },
+  // Atlas — at PM desk, tracking progress
+  { status: 'idle', room: 'kitchen', idleMinutes: 8, task: 'Sprint board updated — 4/7 tasks done, on track for 30-min deadline' },
+  // Ledger — on a break, finished cost analysis
+  { status: 'idle', room: 'game_room', idleMinutes: 15, task: 'Completed cost analysis: $0 infra cost, Shopify + Vercel free tiers' },
 ];
 
 function getRelativeTime(minutes: number): string {
