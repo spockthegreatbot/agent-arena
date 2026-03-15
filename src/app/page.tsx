@@ -51,7 +51,7 @@ export default function Home() {
     <main className="h-screen w-screen bg-[#0a0a0f] flex overflow-hidden relative">
       {/* Left: Pixel Office — 70% */}
       <div className="flex-[7] h-full p-2 flex items-center justify-center min-w-0">
-        <PixelOffice agents={agents} />
+        <PixelOffice agents={agents} activities={activities} />
       </div>
 
       {/* Right: Activity Panel — 30% */}

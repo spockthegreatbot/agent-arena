@@ -14,10 +14,10 @@ const DEMO_STATUSES: { status: AgentStatus; room: RoomId; idleMinutes: number; t
   { status: 'active', room: 'main_office', idleMinutes: 0, task: 'Designing new landing page mockups' },
   { status: 'active', room: 'server_room', idleMinutes: 0, task: 'Running security audit on production servers' },
   { status: 'idle', room: 'game_room', idleMinutes: 25, task: 'Drafted tweet thread about product launch' },
-  { status: 'offline', room: 'game_room', idleMinutes: 180, task: null },
+  { status: 'offline', room: 'rest_room', idleMinutes: 180, task: null },
   { status: 'active', room: 'main_office', idleMinutes: 0, task: 'Deploying hotfix to staging environment' },
   { status: 'idle', room: 'kitchen', idleMinutes: 8, task: 'Updated sprint board and priorities' },
-  { status: 'offline', room: 'game_room', idleMinutes: 300, task: null },
+  { status: 'offline', room: 'rest_room', idleMinutes: 300, task: null },
 ];
 
 function getRelativeTime(minutes: number): string {
