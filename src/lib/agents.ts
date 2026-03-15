@@ -43,7 +43,7 @@ export interface AgentState {
   room: RoomId;
 }
 
-export type ActivityType = 'regular' | 'task_complete' | 'deploy' | 'alert' | 'scanning' | 'security' | 'interaction';
+export type ActivityType = 'regular' | 'task_complete' | 'deploy' | 'alert' | 'scanning' | 'security' | 'interaction' | 'chat';
 
 export interface ActivityItem {
   timestamp: string;

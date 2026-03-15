@@ -168,9 +168,10 @@ const MONITOR_CONTENT: Record<string, string> = {
 interface PixelOfficeProps {
   agents: AgentState[];
   activities?: ActivityItem[];
+  onAgentClick?: (agentId: string) => void;
 }
 
-export default function PixelOffice({ agents, activities = [] }: PixelOfficeProps) {
+export default function PixelOffice({ agents, activities = [], onAgentClick }: PixelOfficeProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const frameRef = useRef(0);
@@ -379,6 +380,28 @@ export default function PixelOffice({ agents, activities = [] }: PixelOfficeProp
 
   const handleMouseLeave = useCallback(() => setTooltip(null), []);
 
+  // ===== CLICK DETECTION =====
+  const handleClick = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
+    if (!onAgentClick) return;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = W / rect.width;
+    const scaleY = H / rect.height;
+    const mx = (e.clientX - rect.left) * scaleX;
+    const my = (e.clientY - rect.top) * scaleY;
+
+    const animMap = agentAnimRef.current;
+    for (const agent of agents) {
+      const anim = animMap.get(agent.id);
+      if (!anim) continue;
+      if (Math.abs(mx - anim.x) < 20 && Math.abs(my - anim.y) < 24) {
+        onAgentClick(agent.id);
+        return;
+      }
+    }
+  }, [agents, onAgentClick]);
+
   // ===== MAIN DRAW =====
   const drawFrame = useCallback((ctx: CanvasRenderingContext2D, frame: number) => {
     ctx.imageSmoothingEnabled = false;
@@ -526,6 +549,7 @@ export default function PixelOffice({ agents, activities = [] }: PixelOfficeProp
         style={{ imageRendering: 'pixelated', width: '100%', height: '100%', objectFit: 'contain' }}
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
+        onClick={handleClick}
       />
 
       {/* Tooltip overlay */}
@@ -733,7 +757,7 @@ function drawWallDecorations(ctx: CanvasRenderingContext2D, frame: number) {
   ctx.fillStyle = '#6366f1';
   ctx.font = 'bold 9px monospace';
   ctx.textAlign = 'center';
-  ctx.fillText('⚡ ARENA HQ', 480, 282);
+  ctx.fillText('⚡ THE AGENCY', 480, 282);
 
   const stickyColors = ['#fbbf24', '#22c55e', '#ec4899', '#3b82f6'];
   for (let i = 0; i < 4; i++) {

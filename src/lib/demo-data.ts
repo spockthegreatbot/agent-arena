@@ -54,14 +54,14 @@ export function getDemoAgentStates(): AgentState[] {
 
 const DEMO_ACTIVITIES: { agentIndex: number; message: string; type: ActivityItem['type']; minutesAgo: number }[] = [
   { agentIndex: 0, message: 'Assigned 3 new tasks to Scotty and Nova from the backlog', type: 'regular', minutesAgo: 2 },
-  { agentIndex: 1, message: 'Deployed Agent Arena v1.2 to production 🚀', type: 'deploy', minutesAgo: 5 },
+  { agentIndex: 1, message: 'Deployed The Agency v1.2 to production 🚀', type: 'deploy', minutesAgo: 5 },
   { agentIndex: 5, message: '🛡️ Security scan complete — no vulnerabilities found', type: 'security', minutesAgo: 8 },
   { agentIndex: 4, message: 'Finished hero section redesign with new animations', type: 'task_complete', minutesAgo: 12 },
   { agentIndex: 2, message: 'BTC broke $95k resistance — watching for confirmation', type: 'regular', minutesAgo: 15 },
   { agentIndex: 8, message: 'Hotfix deployed: fixed WebSocket reconnection bug', type: 'deploy', minutesAgo: 18 },
   { agentIndex: 3, message: 'Research report: Top 10 AI agent frameworks compared', type: 'task_complete', minutesAgo: 22 },
   { agentIndex: 9, message: 'Sprint velocity up 15% — team is shipping faster', type: 'regular', minutesAgo: 30 },
-  { agentIndex: 6, message: 'Published blog post: "How We Built Agent Arena"', type: 'task_complete', minutesAgo: 35 },
+  { agentIndex: 6, message: 'Published blog post: "How We Built The Agency"', type: 'task_complete', minutesAgo: 35 },
   { agentIndex: 1, message: 'Using tool: exec — running npm run build', type: 'scanning', minutesAgo: 40 },
   { agentIndex: 5, message: '⚠️ Unusual SSH login attempt from unknown IP blocked', type: 'alert', minutesAgo: 45 },
   { agentIndex: 0, message: 'Code review complete on PR #42 — approved with comments', type: 'task_complete', minutesAgo: 50 },

@@ -26,6 +26,7 @@ const TYPE_CONFIG: Record<ActivityType, { borderColor: string; icon: string; dim
   scanning:      { borderColor: 'transparent', icon: '🔄', dimmed: true },
   security:      { borderColor: '#f59e0b', icon: '🛡️' },
   interaction:   { borderColor: '#8b5cf6', icon: '🤝' },
+  chat:          { borderColor: '#6366f1', icon: '💬' },
 };
 
 function relativeTime(iso: string): string {
@@ -52,9 +53,10 @@ function groupByRoom(agents: AgentState[]): Record<RoomId, number> {
 }
 
 function CompactMessage({ item }: { item: ActivityItem }) {
-  const config = TYPE_CONFIG[item.type];
+  const config = TYPE_CONFIG[item.type] || TYPE_CONFIG.regular;
   const agentColor = item.agentColor || '#9ca3af';
   const hasBorder = config.borderColor !== 'transparent';
+  const isChat = item.type === 'chat';
 
   return (
     <div
@@ -64,10 +66,14 @@ function CompactMessage({ item }: { item: ActivityItem }) {
         opacity: config.dimmed ? 0.5 : 1,
       }}
     >
-      <span className="text-[10px] shrink-0 mt-px">{item.agentEmoji}</span>
+      <span className="text-[10px] shrink-0 mt-px">{isChat ? '💬' : item.agentEmoji}</span>
       <div className="flex-1 min-w-0">
         <span className="font-bold text-[10px]" style={{ color: agentColor }}>{item.agentName} </span>
-        <span className="text-[11px] text-[#b0b0c0] leading-tight">{item.message}</span>
+        {isChat ? (
+          <span className="text-[11px] text-[#8b8bc0] leading-tight italic">{item.message}</span>
+        ) : (
+          <span className="text-[11px] text-[#b0b0c0] leading-tight">{item.message}</span>
+        )}
       </div>
       <span className="shrink-0 text-[9px] text-[#4b5563] font-mono mt-0.5">{relativeTime(item.timestamp)}</span>
     </div>
@@ -293,7 +299,7 @@ export default function ActivityPanel({ agents, activities, stats }: ActivityPan
       {/* Compact Header */}
       <div className="px-3 py-2 border-b border-[#1e1e30] flex items-center justify-between">
         <h1 className="text-sm font-bold text-white tracking-wide flex items-center gap-1.5">
-          ⚡ Arena
+          ⚡ The Agency
         </h1>
         <div className="flex items-center gap-1.5">
           <span className="text-[10px] bg-[#22c55e22] text-[#22c55e] px-1.5 py-0.5 rounded-full">{activeCount}</span>
