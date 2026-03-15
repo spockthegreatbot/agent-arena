@@ -24,6 +24,7 @@ export const AGENTS: AgentConfig[] = [
 ];
 
 export type AgentStatus = 'active' | 'idle' | 'offline';
+export type RoomId = 'main_office' | 'meeting_room' | 'kitchen' | 'game_room' | 'server_room';
 
 export interface AgentState {
   id: string;
@@ -38,6 +39,8 @@ export interface AgentState {
   lastActive: string | null;
   lastActiveRelative: string;
   currentTask: string | null;
+  idleMinutes: number;
+  room: RoomId;
 }
 
 export interface ActivityItem {
@@ -57,4 +60,13 @@ export interface SystemStats {
   activeAgents: number;
   sessionsToday: number;
   uptime: string;
+}
+
+/** Determine which room an agent belongs in based on status */
+export function getAgentRoom(agent: { status: AgentStatus; idleMinutes: number }): RoomId {
+  if (agent.status === 'active') return 'main_office';
+  if (agent.status === 'idle' && agent.idleMinutes > 5 && agent.idleMinutes <= 15) return 'kitchen';
+  if (agent.status === 'idle' && agent.idleMinutes > 15) return 'game_room';
+  if (agent.status === 'offline') return 'game_room';
+  return 'main_office';
 }

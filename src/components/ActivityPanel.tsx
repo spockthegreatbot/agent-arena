@@ -1,12 +1,20 @@
 'use client';
 
-import { AgentState, ActivityItem, SystemStats } from '@/lib/agents';
+import { AgentState, ActivityItem, SystemStats, RoomId } from '@/lib/agents';
 
 interface ActivityPanelProps {
   agents: AgentState[];
   activities: ActivityItem[];
   stats: SystemStats | null;
 }
+
+const ROOM_LABELS: Record<RoomId, { emoji: string; name: string }> = {
+  main_office: { emoji: '🏢', name: 'Main Office' },
+  meeting_room: { emoji: '🤝', name: 'Meeting Room' },
+  kitchen: { emoji: '🍳', name: 'Kitchen' },
+  game_room: { emoji: '🎮', name: 'Game Room' },
+  server_room: { emoji: '🖥️', name: 'Server Room' },
+};
 
 function formatTime(iso: string): string {
   try {
@@ -17,8 +25,28 @@ function formatTime(iso: string): string {
   }
 }
 
+function groupByRoom(agents: AgentState[]): Record<RoomId, AgentState[]> {
+  const groups: Record<RoomId, AgentState[]> = {
+    main_office: [],
+    meeting_room: [],
+    kitchen: [],
+    game_room: [],
+    server_room: [],
+  };
+  for (const a of agents) {
+    if (groups[a.room]) {
+      groups[a.room].push(a);
+    } else {
+      groups.main_office.push(a);
+    }
+  }
+  return groups;
+}
+
 export default function ActivityPanel({ agents, activities, stats }: ActivityPanelProps) {
   const activeCount = agents.filter(a => a.status === 'active').length;
+  const idleCount = agents.filter(a => a.status === 'idle').length;
+  const roomGroups = groupByRoom(agents);
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
@@ -37,6 +65,34 @@ export default function ActivityPanel({ agents, activities, stats }: ActivityPan
           <span className="text-xs bg-[#22c55e22] text-[#22c55e] px-2 py-1 rounded-full">
             {activeCount} active
           </span>
+          {idleCount > 0 && (
+            <span className="text-xs bg-[#eab30822] text-[#eab308] px-2 py-1 rounded-full">
+              {idleCount} idle
+            </span>
+          )}
+        </div>
+      </div>
+
+      {/* Room Occupancy */}
+      <div className="px-4 py-2 border-b border-[#2a2a3e]">
+        <h2 className="text-sm font-semibold text-[#9ca3af] mb-2">🗺️ Room Occupancy</h2>
+        <div className="space-y-1">
+          {Object.entries(roomGroups).map(([roomId, roomAgents]) => {
+            if (roomAgents.length === 0) return null;
+            const room = ROOM_LABELS[roomId as RoomId];
+            return (
+              <div key={roomId} className="flex items-center gap-2 text-xs">
+                <span className="shrink-0 w-4">{room.emoji}</span>
+                <span className="text-[#6b7280] shrink-0 w-24">{room.name}:</span>
+                <span className="text-[#d0d0d0] truncate">
+                  {roomAgents.map(a => {
+                    const suffix = a.status === 'offline' ? ' 💤' : a.status === 'idle' ? ' ☕' : '';
+                    return `${a.emoji} ${a.name}${suffix}`;
+                  }).join(', ')}
+                </span>
+              </div>
+            );
+          })}
         </div>
       </div>
 
@@ -68,7 +124,7 @@ export default function ActivityPanel({ agents, activities, stats }: ActivityPan
         <div className="px-4 py-2">
           <h2 className="text-sm font-semibold text-[#9ca3af]">👥 Agents</h2>
         </div>
-        <div className="grid grid-cols-2 lg:grid-cols-3 gap-2 px-3 pb-3 max-h-[280px] overflow-y-auto">
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-2 px-3 pb-3 max-h-[250px] overflow-y-auto">
           {agents.map(agent => (
             <AgentCard key={agent.id} agent={agent} />
           ))}
@@ -81,7 +137,7 @@ export default function ActivityPanel({ agents, activities, stats }: ActivityPan
           <span>CPU: {stats.cpuLoad.toFixed(1)}</span>
           <span>RAM: {stats.ramUsed}MB/{stats.ramTotal}MB</span>
           <span>Disk: {stats.diskUsed}G/{stats.diskTotal}G</span>
-          <span>Sessions today: {stats.sessionsToday}</span>
+          <span>Sessions: {stats.sessionsToday}</span>
         </div>
       )}
     </div>
@@ -90,10 +146,12 @@ export default function ActivityPanel({ agents, activities, stats }: ActivityPan
 
 function AgentCard({ agent }: { agent: AgentState }) {
   const statusDot = agent.status === 'active'
-    ? 'bg-green-500 shadow-green-500/50 shadow-sm'
+    ? 'bg-green-500 shadow-green-500/50 shadow-sm animate-pulse'
     : agent.status === 'idle'
       ? 'bg-yellow-500'
       : 'bg-gray-600';
+
+  const room = ROOM_LABELS[agent.room];
 
   return (
     <div
@@ -110,9 +168,14 @@ function AgentCard({ agent }: { agent: AgentState }) {
       </div>
       <p className="text-[10px] text-[#6b7280] mb-1">{agent.role}</p>
       <div className="flex items-center justify-between">
-        <span className="text-[10px]" style={{ color: agent.color }}>{agent.model}</span>
+        <span className="text-[10px]" style={{ color: agent.color }}>{room?.emoji} {room?.name}</span>
         <span className="text-[10px] text-[#4b5563]">{agent.lastActiveRelative}</span>
       </div>
+      {agent.status === 'active' && agent.currentTask && (
+        <p className="text-[9px] text-[#9ca3af] mt-1 truncate">
+          📝 {agent.currentTask.substring(0, 50)}
+        </p>
+      )}
     </div>
   );
 }

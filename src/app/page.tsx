@@ -45,13 +45,13 @@ export default function Home() {
 
   return (
     <main className="h-screen w-screen bg-[#0a0a0f] flex overflow-hidden">
-      {/* Left: Pixel Office */}
-      <div className="w-1/2 h-full p-4 flex items-center justify-center">
+      {/* Left: Pixel Office (wider now for bigger canvas) */}
+      <div className="w-3/5 h-full p-3 flex items-center justify-center">
         <PixelOffice agents={agents} />
       </div>
 
       {/* Right: Activity Panel */}
-      <div className="w-1/2 h-full border-l border-[#2a2a3e] flex flex-col">
+      <div className="w-2/5 h-full border-l border-[#2a2a3e] flex flex-col">
         <ActivityPanel agents={agents} activities={activities} stats={stats} />
       </div>
     </main>
