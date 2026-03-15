@@ -184,6 +184,15 @@ export default function PixelOffice({ agents, activities = [], onAgentClick }: P
   const [tooltip, setTooltip] = useState<{ x: number; y: number; content: React.ReactNode } | null>(null);
   const [toasts, setToasts] = useState<{ id: number; agent: string; emoji: string; color: string; message: string; time: number }[]>([]);
   const toastIdRef = useRef(0);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Detect mobile
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
+  }, []);
 
   // ===== SPAWN PARTICLES FOR AN AGENT =====
   const spawnEffect = useCallback((agentId: string, effectKey: string) => {
@@ -380,27 +389,41 @@ export default function PixelOffice({ agents, activities = [], onAgentClick }: P
 
   const handleMouseLeave = useCallback(() => setTooltip(null), []);
 
-  // ===== CLICK DETECTION =====
-  const handleClick = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
+  // ===== CLICK/TAP DETECTION =====
+  const hitTestAgent = useCallback((clientX: number, clientY: number) => {
     if (!onAgentClick) return;
     const canvas = canvasRef.current;
     if (!canvas) return;
     const rect = canvas.getBoundingClientRect();
     const scaleX = W / rect.width;
     const scaleY = H / rect.height;
-    const mx = (e.clientX - rect.left) * scaleX;
-    const my = (e.clientY - rect.top) * scaleY;
+    const mx = (clientX - rect.left) * scaleX;
+    const my = (clientY - rect.top) * scaleY;
+    // Larger hit area on mobile for touch friendliness
+    const hitX = isMobile ? 28 : 20;
+    const hitY = isMobile ? 32 : 24;
 
     const animMap = agentAnimRef.current;
     for (const agent of agents) {
       const anim = animMap.get(agent.id);
       if (!anim) continue;
-      if (Math.abs(mx - anim.x) < 20 && Math.abs(my - anim.y) < 24) {
+      if (Math.abs(mx - anim.x) < hitX && Math.abs(my - anim.y) < hitY) {
         onAgentClick(agent.id);
         return;
       }
     }
-  }, [agents, onAgentClick]);
+  }, [agents, onAgentClick, isMobile]);
+
+  const handleClick = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
+    hitTestAgent(e.clientX, e.clientY);
+  }, [hitTestAgent]);
+
+  const handleTouchEnd = useCallback((e: React.TouchEvent<HTMLCanvasElement>) => {
+    if (e.changedTouches.length > 0) {
+      const touch = e.changedTouches[0];
+      hitTestAgent(touch.clientX, touch.clientY);
+    }
+  }, [hitTestAgent]);
 
   // ===== MAIN DRAW =====
   const drawFrame = useCallback((ctx: CanvasRenderingContext2D, frame: number) => {
@@ -521,8 +544,10 @@ export default function PixelOffice({ agents, activities = [], onAgentClick }: P
     }
 
     drawAmbient(ctx, frame);
-    drawMiniMap(ctx, agents, animMap);
-  }, [agents, getTargetPosition]);
+    if (!isMobile) {
+      drawMiniMap(ctx, agents, animMap);
+    }
+  }, [agents, getTargetPosition, isMobile]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -545,11 +570,12 @@ export default function PixelOffice({ agents, activities = [], onAgentClick }: P
         ref={canvasRef}
         width={W}
         height={H}
-        className="border border-[#2a2a3e] rounded-lg"
+        className="border border-[#2a2a3e] rounded-lg max-w-full max-h-full"
         style={{ imageRendering: 'pixelated', width: '100%', height: '100%', objectFit: 'contain' }}
-        onMouseMove={handleMouseMove}
-        onMouseLeave={handleMouseLeave}
+        onMouseMove={!isMobile ? handleMouseMove : undefined}
+        onMouseLeave={!isMobile ? handleMouseLeave : undefined}
         onClick={handleClick}
+        onTouchEnd={handleTouchEnd}
       />
 
       {/* Tooltip overlay */}
@@ -568,9 +594,13 @@ export default function PixelOffice({ agents, activities = [], onAgentClick }: P
         </div>
       )}
 
-      {/* Notification toasts */}
-      <div className="absolute bottom-4 right-4 flex flex-col gap-2 z-50" style={{ maxWidth: 280 }}>
-        {toasts.map((toast, i) => (
+      {/* Notification toasts — top on mobile, bottom-right on desktop */}
+      <div className={`absolute flex flex-col gap-2 z-50 ${
+        isMobile
+          ? 'top-2 left-2 right-2'
+          : 'bottom-4 right-4'
+      }`} style={{ maxWidth: isMobile ? undefined : 280 }}>
+        {toasts.map((toast) => (
           <div
             key={toast.id}
             className="flex items-start gap-2 px-3 py-2 rounded-lg shadow-lg animate-slide-in"

@@ -321,8 +321,8 @@ export default function ActivityPanel({ agents, activities, stats }: ActivityPan
         </span>
       </div>
 
-      {/* Agent strip */}
-      <div className="px-2 py-1.5 border-b border-[#1e1e30] flex items-center gap-1 overflow-x-auto">
+      {/* Agent strip — larger touch targets on mobile */}
+      <div className="px-2 py-1.5 border-b border-[#1e1e30] flex items-center gap-1.5 md:gap-1 overflow-x-auto scrollbar-none">
         {agents.map(agent => {
           const isActive = agent.status === 'active';
           const isIdle = agent.status === 'idle';
@@ -333,16 +333,16 @@ export default function ActivityPanel({ agents, activities, stats }: ActivityPan
             <button
               key={agent.id}
               onClick={() => setExpandedAgent(isExpanded ? null : agent.id)}
-              className="relative shrink-0 flex items-center gap-1 px-1.5 py-0.5 rounded-full transition-all hover:bg-[#1a1a2e]"
+              className="relative shrink-0 flex items-center gap-1 px-2 md:px-1.5 py-1.5 md:py-0.5 rounded-full transition-all hover:bg-[#1a1a2e] min-w-[36px] min-h-[36px] md:min-w-0 md:min-h-0 justify-center"
               style={{
                 backgroundColor: isExpanded ? agent.color + '22' : 'transparent',
                 border: isExpanded ? `1px solid ${agent.color}44` : '1px solid transparent',
               }}
             >
-              <span className="text-xs">{agent.emoji}</span>
-              <span className={`absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full ${dotColor} border border-[#0f0f1a]`} />
+              <span className="text-sm md:text-xs">{agent.emoji}</span>
+              <span className={`absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 md:w-2 md:h-2 rounded-full ${dotColor} border border-[#0f0f1a]`} />
               {isExpanded && (
-                <span className="text-[10px] font-medium text-[#d0d0d0]">{agent.name}</span>
+                <span className="text-[11px] md:text-[10px] font-medium text-[#d0d0d0]">{agent.name}</span>
               )}
             </button>
           );
@@ -370,8 +370,8 @@ export default function ActivityPanel({ agents, activities, stats }: ActivityPan
         );
       })()}
 
-      {/* Tab Bar */}
-      <div className="px-3 py-1 border-b border-[#1e1e30] flex items-center gap-3">
+      {/* Tab Bar — touch-friendly on mobile (44px tap targets) */}
+      <div className="px-3 py-1 border-b border-[#1e1e30] flex items-center gap-1 md:gap-3">
         {([
           { id: 'now' as TabId, label: '🔥 Now' },
           { id: 'feed' as TabId, label: '💬 Feed' },
@@ -380,9 +380,9 @@ export default function ActivityPanel({ agents, activities, stats }: ActivityPan
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`text-[10px] font-bold py-0.5 transition-colors ${
+            className={`text-xs md:text-[10px] font-bold py-2 md:py-0.5 px-3 md:px-0 min-h-[44px] md:min-h-0 transition-colors ${
               activeTab === tab.id
-                ? 'text-white border-b border-white'
+                ? 'text-white border-b-2 md:border-b border-white'
                 : 'text-[#6b7280] hover:text-[#9ca3af]'
             }`}
           >

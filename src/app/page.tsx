@@ -144,14 +144,14 @@ export default function Home() {
   };
 
   return (
-    <main className="h-screen w-screen bg-[#0a0a0f] flex overflow-hidden relative">
-      {/* Left: Pixel Office — 70% */}
-      <div className="flex-[7] h-full p-2 flex items-center justify-center min-w-0">
+    <main className="h-screen w-screen bg-[#0a0a0f] flex flex-col md:flex-row overflow-hidden relative">
+      {/* Top (mobile) / Left (desktop): Pixel Office */}
+      <div className="w-full md:flex-[7] h-[55vh] md:h-full p-1 md:p-2 flex items-center justify-center min-w-0 shrink-0">
         <PixelOffice agents={agents} activities={activities} onAgentClick={handleAgentClick} />
       </div>
 
-      {/* Right: Activity Panel — 30% */}
-      <div className="flex-[3] h-full border-l border-[#2a2a3e] flex flex-col max-w-[380px] min-w-[260px]">
+      {/* Bottom (mobile) / Right (desktop): Activity Panel */}
+      <div className="w-full md:flex-[3] flex-1 md:h-full border-t md:border-t-0 md:border-l border-[#2a2a3e] flex flex-col md:max-w-[380px] md:min-w-[260px] overflow-hidden">
         <ActivityPanel agents={agents} activities={activities} stats={stats} />
       </div>
 
@@ -178,7 +178,7 @@ export default function Home() {
           style={{ backgroundColor: '#0a0a0f' }}
         >
           <h1
-            className="text-6xl md:text-8xl font-bold text-white tracking-widest mb-4"
+            className="text-3xl sm:text-5xl md:text-8xl font-bold text-white tracking-widest mb-4 px-4 text-center"
             style={{
               fontFamily: 'monospace',
               textShadow: '0 0 40px rgba(147,51,234,0.5), 0 0 80px rgba(147,51,234,0.2)',
@@ -186,7 +186,7 @@ export default function Home() {
           >
             THE AGENCY
           </h1>
-          <p className="text-xl md:text-2xl text-[#9ca3af] tracking-wide" style={{ fontFamily: 'monospace' }}>
+          <p className="text-sm sm:text-lg md:text-2xl text-[#9ca3af] tracking-wide" style={{ fontFamily: 'monospace' }}>
             11 AI Agents. One Office.
           </p>
         </div>
@@ -200,12 +200,9 @@ export default function Home() {
           style={{ backgroundColor: 'rgba(0,0,0,0.6)' }}
         >
           <div
-            className="absolute bg-[#12121f] border rounded-xl p-4 shadow-2xl max-w-[300px] cursor-default"
+            className="absolute bg-[#12121f] border rounded-xl p-4 shadow-2xl max-w-[280px] sm:max-w-[300px] cursor-default left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 md:left-[35%] md:top-1/2 w-[calc(100vw-2rem)] sm:w-auto mx-auto"
             onClick={(e) => e.stopPropagation()}
             style={{
-              top: '50%',
-              left: '35%',
-              transform: 'translate(-50%, -50%)',
               borderColor: spotlightAgent.color + '66',
               boxShadow: `0 0 40px ${spotlightAgent.color}22`,
             }}
@@ -264,7 +261,7 @@ export default function Home() {
             </div>
 
             {/* Click to dismiss hint */}
-            <p className="text-[9px] text-[#4b5563] text-center mt-3">Click outside to dismiss</p>
+            <p className="text-[9px] text-[#4b5563] text-center mt-3">Tap outside to dismiss</p>
           </div>
         </div>
       )}
