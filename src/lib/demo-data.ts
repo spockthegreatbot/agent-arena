@@ -10,13 +10,13 @@ import { AGENTS, AgentState, ActivityItem, SystemStats, AgentStatus, RoomId } fr
 // Shows agents in different rooms working on a realistic mission
 const DEMO_STATUSES: { status: AgentStatus; room: RoomId; idleMinutes: number; task: string | null }[] = [
   // Spock — coordinating from meeting room, briefing the team
-  { status: 'active', room: 'meeting_room', idleMinutes: 0, task: 'Briefing team: "Build a landing page for Happy Beads — dog necklaces brand"' },
+  { status: 'active', room: 'meeting_room', idleMinutes: 0, task: 'Briefing team: "Build a landing page for a pet accessories brand"' },
   // Scotty — at his desk, building the site
   { status: 'active', room: 'main_office', idleMinutes: 0, task: 'Scaffolding Next.js 15 landing page — hero section + product grid' },
   // Gordon — at trading terminal, scanning markets between tasks
-  { status: 'active', room: 'main_office', idleMinutes: 0, task: 'Scanning 301 Polymarket events — NBA + CS2 + politics' },
+  { status: 'active', room: 'main_office', idleMinutes: 0, task: 'Scanning 301 prediction markets — NBA + CS2 + politics' },
   // Watson — in meeting room with Spock, presenting research
-  { status: 'active', room: 'meeting_room', idleMinutes: 0, task: 'Presenting competitor analysis: Salty Paws, Hypnotic Dog, market gaps' },
+  { status: 'active', room: 'meeting_room', idleMinutes: 0, task: 'Presenting competitor analysis: 3 competitors found, market gaps identified' },
   // Nova — at design desk, creating the visual spec
   { status: 'active', room: 'main_office', idleMinutes: 0, task: 'Designing hero mockup — warm tones, dog photos, Sunshine Coast vibe' },
   // Cipher — in server room, auditing the deploy
