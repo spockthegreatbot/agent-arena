@@ -184,10 +184,10 @@ export default function Home() {
               textShadow: '0 0 40px rgba(147,51,234,0.5), 0 0 80px rgba(147,51,234,0.2)',
             }}
           >
-            THE AGENCY
+            AGENCY HQ
           </h1>
           <p className="text-sm sm:text-lg md:text-2xl text-[#9ca3af] tracking-wide" style={{ fontFamily: 'monospace' }}>
-            11 AI Agents. One Office.
+            Your AI agents. One office.
           </p>
         </div>
       )}

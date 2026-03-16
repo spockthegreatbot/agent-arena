@@ -299,7 +299,7 @@ export default function ActivityPanel({ agents, activities, stats }: ActivityPan
       {/* Compact Header */}
       <div className="px-3 py-2 border-b border-[#1e1e30] flex items-center justify-between">
         <h1 className="text-sm font-bold text-white tracking-wide flex items-center gap-1.5">
-          ⚡ The Agency
+          ⚡ Agency HQ
         </h1>
         <div className="flex items-center gap-1.5">
           <span className="text-[10px] bg-[#22c55e22] text-[#22c55e] px-1.5 py-0.5 rounded-full">{activeCount}</span>

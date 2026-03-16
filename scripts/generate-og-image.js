@@ -35,24 +35,24 @@ vignette.addColorStop(1, 'rgba(0,0,0,0.5)');
 ctx.fillStyle = vignette;
 ctx.fillRect(0, 0, W, H);
 
-// "THE AGENCY" title
+// "AGENCY HQ" title
 ctx.fillStyle = '#ffffff';
 ctx.font = 'bold 96px monospace';
 ctx.textAlign = 'center';
 ctx.textBaseline = 'middle';
-ctx.fillText('THE AGENCY', W/2, H/2 - 80);
+ctx.fillText('AGENCY HQ', W/2, H/2 - 80);
 
 // Glow effect behind title
 ctx.shadowColor = '#9333ea';
 ctx.shadowBlur = 30;
 ctx.fillStyle = '#ffffff';
-ctx.fillText('THE AGENCY', W/2, H/2 - 80);
+ctx.fillText('AGENCY HQ', W/2, H/2 - 80);
 ctx.shadowBlur = 0;
 
 // Subtitle
 ctx.fillStyle = '#9ca3af';
 ctx.font = '32px monospace';
-ctx.fillText('11 AI Agents. One Office. Live.', W/2, H/2 + 10);
+ctx.fillText('Watch your AI agents work, chat, and ship — live.', W/2, H/2 + 10);
 
 // Agent dots
 const agentColors = [

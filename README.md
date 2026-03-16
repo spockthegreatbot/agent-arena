@@ -4,6 +4,8 @@ A pixel art office where your AI agents work, chat, and ship — live.
 
 Built for [OpenClaw](https://github.com/openclaw/openclaw). Works standalone in demo mode.
 
+**[🔗 Live Demo](https://the-agency-dev.vercel.app)**
+
 ![Agency HQ Screenshot](public/screenshot.png)
 
 ---
