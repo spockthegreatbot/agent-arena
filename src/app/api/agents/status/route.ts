@@ -94,7 +94,7 @@ export async function GET() {
       });
     }
 
-    const openclawHome = process.env.OPENCLAW_HOME || path.join(process.env.HOME || '/home/linuxuser', '.openclaw');
+    const openclawHome = process.env.OPENCLAW_HOME || path.join(process.env.HOME || '/home/user', '.openclaw');
     const agentsHome = path.join(openclawHome, 'agents');
 
     const states: AgentState[] = AGENTS.map(agent => {

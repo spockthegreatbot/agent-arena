@@ -21,7 +21,7 @@ let cacheTime = 0;
 const CACHE_TTL = 15000;
 
 function extractActivities(): ActivityItem[] {
-  const home = process.env.HOME || '/home/linuxuser';
+  const home = process.env.HOME || '/home/user';
   const openclawHome = process.env.OPENCLAW_HOME || path.join(home, '.openclaw');
   const agentsHome = path.join(openclawHome, 'agents');
   const cronRunsDir = path.join(openclawHome, 'cron', 'runs');

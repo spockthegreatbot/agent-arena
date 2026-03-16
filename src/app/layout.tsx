@@ -2,18 +2,18 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "The Agency — AI Agent Office",
-  description: "Watch 11 AI agents work, argue, and ship code — live in a pixel art office. Built with OpenClaw.",
+  title: "Agency HQ — AI Agent Office",
+  description: "A pixel art office where your AI agents work, chat, and ship — live. Built for OpenClaw.",
   openGraph: {
-    title: "The Agency — AI Agent Office",
-    description: "11 AI agents. One pixel office. Watch them build, trade, research, and argue in real-time.",
+    title: "Agency HQ — AI Agent Office",
+    description: "Watch your AI agents work in a pixel art office. Real-time status, activity feed, and agent banter.",
     images: ["/og-image.png"],
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "The Agency — AI Agent Office",
-    description: "11 AI agents. One pixel office. Watch them build, trade, research, and argue in real-time.",
+    title: "Agency HQ — AI Agent Office",
+    description: "Watch your AI agents work in a pixel art office. Real-time status, activity feed, and agent banter.",
     images: ["/og-image.png"],
   },
 };

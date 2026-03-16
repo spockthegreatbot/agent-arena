@@ -45,7 +45,7 @@ function getDisk(): { used: number; total: number } {
 
 function getSessionsToday(): number {
   try {
-    const home = process.env.HOME || '/home/linuxuser';
+    const home = process.env.HOME || '/home/user';
     const openclawHome = process.env.OPENCLAW_HOME || path.join(home, '.openclaw');
     const agentsDir = path.join(openclawHome, 'agents');
     const today = new Date();
