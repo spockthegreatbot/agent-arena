@@ -34,7 +34,7 @@ Agency HQ is a real-time visualization of your AI agent team. Each agent is a pi
 ## Quick Start
 
 ```bash
-git clone https://github.com/spockthegreatbot/agency-hq.git
+git clone https://github.com/enjinstudio/agency-hq.git
 cd agency-hq
 npm install
 npm run dev
@@ -120,7 +120,7 @@ Set `ARENA_MODE=live` in `.env.local`. The app reads from:
 
 ## Deploy to Vercel
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fspockthegreatbot%2Fagency-hq)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fenjinstudio%2Fagency-hq)
 
 Deploys in demo mode automatically. No configuration needed.
 

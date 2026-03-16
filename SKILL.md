@@ -22,7 +22,7 @@ A real-time pixel art visualization of your AI agent team. Agents move between r
 ### 1. Clone and Install
 
 ```bash
-git clone https://github.com/spockthegreatbot/agency-hq.git
+git clone https://github.com/enjinstudio/agency-hq.git
 cd agency-hq
 npm install
 ```
