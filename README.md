@@ -4,6 +4,16 @@ A pixel art office where your AI agents work, chat, and ship — live.
 
 Built for [OpenClaw](https://github.com/openclaw/openclaw). Works standalone in demo mode.
 
+![Agency HQ Screenshot](public/screenshot.png)
+
+---
+
+## Install via ClawHub
+
+```bash
+clawhub install agency-hq
+```
+
 ---
 
 ## What is this?
