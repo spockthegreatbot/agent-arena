@@ -25,7 +25,6 @@ function lightenColor(hex: string, amount: number): string {
 }
 
 // ===== ISOMETRIC HELPERS =====
-// Tile dimensions (2:1 ratio standard)
 const ISO_TW = 48;
 const ISO_TH = 24;
 
@@ -61,7 +60,6 @@ function drawIsoBox(
 ) {
   const twh = tw / 2, thh = th / 2;
 
-  // Top face
   ctx.beginPath();
   ctx.moveTo(cx, cy - thh);
   ctx.lineTo(cx + twh, cy);
@@ -72,7 +70,6 @@ function drawIsoBox(
   ctx.fill();
   if (outline) { ctx.strokeStyle = outline; ctx.lineWidth = 0.8; ctx.stroke(); }
 
-  // Left face
   ctx.beginPath();
   ctx.moveTo(cx - twh, cy);
   ctx.lineTo(cx, cy + thh);
@@ -83,7 +80,6 @@ function drawIsoBox(
   ctx.fill();
   if (outline) { ctx.strokeStyle = outline; ctx.lineWidth = 0.8; ctx.stroke(); }
 
-  // Right face
   ctx.beginPath();
   ctx.moveTo(cx + twh, cy);
   ctx.lineTo(cx, cy + thh);
@@ -107,31 +103,31 @@ interface RoomDef {
 }
 
 const ROOMS: RoomDef[] = [
-  { id: 'meeting_room', label: 'MEETING ROOM', emoji: '🤝', x: 0, y: 0, w: 480, h: 260, floorColor1: '#F2E4D0', floorColor2: '#E8D6BC', tileSize: 28 },
-  { id: 'server_room', label: 'SERVER ROOM', emoji: '🖥️', x: 480, y: 0, w: 480, h: 260, floorColor1: '#EAD8C8', floorColor2: '#E2CEB8', tileSize: 24 },
-  { id: 'main_office', label: 'MAIN OFFICE', emoji: '🏢', x: 0, y: 260, w: 960, h: 260, floorColor1: '#F5E6D3', floorColor2: '#EDD9C0', tileSize: 32 },
-  { id: 'kitchen', label: 'KITCHEN', emoji: '🍳', x: 0, y: 520, w: 240, h: 200, floorColor1: '#F2E0CC', floorColor2: '#EAD4BA', tileSize: 26 },
-  { id: 'game_room', label: 'GAME ROOM', emoji: '🎮', x: 240, y: 520, w: 340, h: 200, floorColor1: '#EDE0D0', floorColor2: '#E5D4C0', tileSize: 30 },
-  { id: 'rest_room', label: 'REST ROOM', emoji: '😴', x: 580, y: 520, w: 380, h: 200, floorColor1: '#E8DDD0', floorColor2: '#E0D0BE', tileSize: 28 },
+  { id: 'meeting_room', label: 'WAR ROOM',    emoji: '⚔️',  x: 0,   y: 0,   w: 480, h: 260, floorColor1: '#2C2840', floorColor2: '#252035', tileSize: 28 },
+  { id: 'server_room',  label: 'THE VAULT',   emoji: '🔒',  x: 480, y: 0,   w: 480, h: 260, floorColor1: '#1A2440', floorColor2: '#151E38', tileSize: 24 },
+  { id: 'main_office',  label: 'THE FLOOR',   emoji: '🏢',  x: 0,   y: 260, w: 960, h: 260, floorColor1: '#F5E6D3', floorColor2: '#EDD9C0', tileSize: 32 },
+  { id: 'kitchen',      label: 'THE PIT',     emoji: '☕',  x: 0,   y: 520, w: 240, h: 200, floorColor1: '#F0DCC8', floorColor2: '#E8D0B8', tileSize: 26 },
+  { id: 'game_room',    label: 'THE ARCADE',  emoji: '🕹️', x: 240, y: 520, w: 340, h: 200, floorColor1: '#1E1A2E', floorColor2: '#181428', tileSize: 30 },
+  { id: 'rest_room',    label: 'SLEEP PODS',  emoji: '🛸',  x: 580, y: 520, w: 380, h: 200, floorColor1: '#0F0F1A', floorColor2: '#0A0A14', tileSize: 28 },
 ];
 
 function getRoomDef(id: RoomId): RoomDef {
   return ROOMS.find(r => r.id === id) || ROOMS[2];
 }
 
-// ===== DESK POSITIONS =====
+// ===== DESK POSITIONS (staggered) =====
 const DESK_LAYOUT: Record<string, { x: number; y: number; row: number }> = {
-  command:     { x: 100, y: 310, row: 0 },
-  dev:         { x: 240, y: 310, row: 0 },
-  trading:     { x: 380, y: 310, row: 0 },
+  command:     { x: 80,  y: 310, row: 0 },
+  dev:         { x: 220, y: 310, row: 0 },
+  trading:     { x: 360, y: 310, row: 0 },
   research:    { x: 520, y: 310, row: 0 },
-  design:      { x: 660, y: 310, row: 0 },
-  security:    { x: 800, y: 310, row: 0 },
-  content:     { x: 160, y: 420, row: 1 },
-  strategy:    { x: 320, y: 420, row: 1 },
-  engineering: { x: 480, y: 420, row: 1 },
-  pm:          { x: 640, y: 420, row: 1 },
-  finance:     { x: 800, y: 420, row: 1 },
+  design:      { x: 680, y: 310, row: 0 },
+  security:    { x: 840, y: 310, row: 0 },
+  content:     { x: 140, y: 420, row: 1 },
+  strategy:    { x: 300, y: 420, row: 1 },
+  engineering: { x: 460, y: 420, row: 1 },
+  pm:          { x: 620, y: 420, row: 1 },
+  finance:     { x: 780, y: 420, row: 1 },
 };
 
 const KITCHEN_SPOTS = [
@@ -174,6 +170,16 @@ const DOORWAYS = [
   { x: 700, y: 510, w: 60, h: 20 },
 ];
 
+// Pet wander spots per room
+const PET_ROOM_SPOTS: Record<RoomId, { x: number; y: number }[]> = {
+  main_office:  [{ x: 480, y: 380 }, { x: 300, y: 360 }, { x: 650, y: 395 }, { x: 150, y: 370 }, { x: 820, y: 365 }],
+  meeting_room: [{ x: 180, y: 195 }, { x: 280, y: 205 }, { x: 380, y: 195 }],
+  kitchen:      [{ x: 80,  y: 600 }, { x: 120, y: 640 }, { x: 180, y: 620 }],
+  game_room:    [{ x: 340, y: 600 }, { x: 440, y: 625 }, { x: 510, y: 610 }],
+  server_room:  [{ x: 600, y: 185 }, { x: 700, y: 195 }, { x: 820, y: 185 }],
+  rest_room:    [{ x: 680, y: 625 }, { x: 780, y: 640 }, { x: 880, y: 625 }],
+};
+
 // ===== AGENT ANIMATION STATE =====
 interface AnimAgent {
   id: string;
@@ -184,6 +190,16 @@ interface AnimAgent {
   state: 'sitting' | 'walking' | 'standing' | 'sleeping' | 'coffee' | 'meeting' | 'gaming';
   gestureFrame: number;
   idleOffset: number;
+}
+
+// ===== PET STATE =====
+interface PetState {
+  x: number; y: number;
+  targetX: number; targetY: number;
+  room: RoomId;
+  wagFrame: number; // 0 or 1
+  moving: boolean;
+  footprints: { x: number; y: number; age: number }[];
 }
 
 // ===== PARTICLE / EFFECTS SYSTEM =====
@@ -234,7 +250,6 @@ function detectEventType(message: string): string | null {
   return null;
 }
 
-// Monitor content types per agent desk
 const MONITOR_CONTENT: Record<string, string> = {
   dev: 'green_code', trader: 'candle_chart', research: 'scrolling_data',
   creative: 'color_palette', growth: 'bar_chart', rook: 'terminal_blink',
@@ -258,12 +273,15 @@ export default function PixelOffice({ agents, activities = [], onAgentClick }: P
   const footprintsRef = useRef<Footprint[]>([]);
   const flashAgentsRef = useRef<Map<string, { color: string; until: number; repeat: number }>>(new Map());
   const prevActivitiesRef = useRef<number>(0);
+  const petRef = useRef<PetState>({
+    x: 120, y: 620, targetX: 120, targetY: 620,
+    room: 'kitchen', wagFrame: 0, moving: false, footprints: [],
+  });
   const [tooltip, setTooltip] = useState<{ x: number; y: number; content: React.ReactNode } | null>(null);
   const [toasts, setToasts] = useState<{ id: number; agent: string; emoji: string; color: string; message: string; time: number }[]>([]);
   const toastIdRef = useRef(0);
   const [isMobile, setIsMobile] = useState(false);
 
-  // Detect mobile
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768);
     check();
@@ -271,7 +289,6 @@ export default function PixelOffice({ agents, activities = [], onAgentClick }: P
     return () => window.removeEventListener('resize', check);
   }, []);
 
-  // ===== SPAWN PARTICLES FOR AN AGENT =====
   const spawnEffect = useCallback((agentId: string, effectKey: string) => {
     const effect = EFFECTS[effectKey];
     if (!effect) return;
@@ -309,15 +326,12 @@ export default function PixelOffice({ agents, activities = [], onAgentClick }: P
     }
   }, []);
 
-  // ===== DETECT NEW ACTIVITIES AND TRIGGER EFFECTS + TOASTS =====
   useEffect(() => {
     if (activities.length > prevActivitiesRef.current && prevActivitiesRef.current > 0) {
       const newItems = activities.slice(prevActivitiesRef.current);
       for (const item of newItems) {
         const eventType = detectEventType(item.message);
-        if (eventType) {
-          spawnEffect(item.agentId, eventType);
-        }
+        if (eventType) spawnEffect(item.agentId, eventType);
         toastIdRef.current++;
         setToasts(prev => {
           const next = [...prev, {
@@ -335,7 +349,6 @@ export default function PixelOffice({ agents, activities = [], onAgentClick }: P
     prevActivitiesRef.current = activities.length;
   }, [activities, spawnEffect]);
 
-  // Auto-dismiss toasts
   useEffect(() => {
     if (toasts.length === 0) return;
     const timer = setInterval(() => {
@@ -346,7 +359,6 @@ export default function PixelOffice({ agents, activities = [], onAgentClick }: P
 
   const getTargetPosition = useCallback((agent: AgentState, allAgents: AgentState[]): { x: number; y: number; state: AnimAgent['state'] } => {
     const room = agent.room;
-
     if (room === 'main_office') {
       const desk = DESK_LAYOUT[agent.desk];
       if (desk) return { x: desk.x, y: desk.y, state: 'sitting' };
@@ -413,7 +425,6 @@ export default function PixelOffice({ agents, activities = [], onAgentClick }: P
     }
   }, [agents, getTargetPosition]);
 
-  // ===== HOVER DETECTION =====
   const handleMouseMove = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -469,7 +480,6 @@ export default function PixelOffice({ agents, activities = [], onAgentClick }: P
 
   const handleMouseLeave = useCallback(() => setTooltip(null), []);
 
-  // ===== CLICK/TAP DETECTION =====
   const hitTestAgent = useCallback((clientX: number, clientY: number) => {
     if (!onAgentClick) return;
     const canvas = canvasRef.current;
@@ -508,7 +518,6 @@ export default function PixelOffice({ agents, activities = [], onAgentClick }: P
   const drawFrame = useCallback((ctx: CanvasRenderingContext2D, frame: number) => {
     ctx.imageSmoothingEnabled = true;
 
-    // Dark background outside rooms
     ctx.fillStyle = '#1a1a2e';
     ctx.fillRect(0, 0, W, H);
 
@@ -519,17 +528,17 @@ export default function PixelOffice({ agents, activities = [], onAgentClick }: P
     drawBaseboards(ctx);
     for (const room of ROOMS) drawRoomLabel(ctx, room);
 
-    drawMeetingRoom(ctx, frame);
-    drawServerRoom(ctx, frame);
-    drawMainOfficeDesks(ctx, frame, agents);
-    drawKitchen(ctx, frame);
-    drawGameRoom(ctx, frame);
-    drawRestRoom(ctx, frame);
+    drawWarRoom(ctx, frame);
+    drawTheVault(ctx, frame);
+    drawTheFloor(ctx, frame, agents);
+    drawThePit(ctx, frame);
+    drawTheArcade(ctx, frame);
+    drawSleepPods(ctx, frame);
     drawWallDecorations(ctx, frame);
     drawDayNightOverlay(ctx);
     drawClock(ctx);
 
-    // Footprints
+    // Agent footprints
     const now = Date.now();
     footprintsRef.current = footprintsRef.current.filter(fp => now - fp.createdAt < 4000);
     for (const fp of footprintsRef.current) {
@@ -550,7 +559,6 @@ export default function PixelOffice({ agents, activities = [], onAgentClick }: P
       p.life--;
       if (p.type === 'confetti') p.vy += 0.12;
       const alpha = Math.max(0, p.life / p.maxLife);
-
       if (p.type === 'confetti') {
         ctx.fillStyle = p.color! + Math.floor(alpha * 255).toString(16).padStart(2, '0');
         ctx.fillRect(p.x, p.y, p.size || 3, p.size || 3);
@@ -561,11 +569,69 @@ export default function PixelOffice({ agents, activities = [], onAgentClick }: P
         ctx.fillText(p.emoji, p.x, p.y);
         ctx.globalAlpha = 1;
       }
-
       if (p.life <= 0) particles.splice(i, 1);
     }
 
-    // Agents sorted by Y (back to front)
+    // ===== PET UPDATE =====
+    const pet = petRef.current;
+
+    // New target every ~45 seconds
+    if (frame % 2700 === 1) {
+      const activeAgents = agents.filter(a => a.status === 'active');
+      if (Math.random() < 0.2 && activeAgents.length > 0) {
+        const target = activeAgents[Math.floor(Math.random() * activeAgents.length)];
+        const anim = agentAnimRef.current.get(target.id);
+        if (anim) {
+          pet.targetX = anim.x + 18;
+          pet.targetY = anim.y + 8;
+          pet.room = target.room;
+        }
+      } else {
+        const roomIds = Object.keys(PET_ROOM_SPOTS) as RoomId[];
+        const room = roomIds[Math.floor(Math.random() * roomIds.length)];
+        const spots = PET_ROOM_SPOTS[room];
+        const spot = spots[Math.floor(Math.random() * spots.length)];
+        pet.targetX = spot.x + (Math.random() - 0.5) * 30;
+        pet.targetY = spot.y + (Math.random() - 0.5) * 20;
+        pet.room = room;
+      }
+    }
+
+    // Move pet
+    const pdx = pet.targetX - pet.x;
+    const pdy = pet.targetY - pet.y;
+    const pdist = Math.sqrt(pdx * pdx + pdy * pdy);
+    if (pdist > 2) {
+      pet.x += (pdx / pdist) * 0.8;
+      pet.y += (pdy / pdist) * 0.8;
+      pet.moving = true;
+      if (frame % 15 === 0) {
+        pet.footprints.push({ x: pet.x, y: pet.y, age: 0 });
+      }
+    } else {
+      pet.moving = false;
+    }
+
+    if (frame % 20 === 0) pet.wagFrame = 1 - pet.wagFrame;
+
+    pet.footprints = pet.footprints
+      .map(fp => ({ ...fp, age: fp.age + 1 }))
+      .filter(fp => fp.age < 60);
+
+    // Draw pet footprints (tiny 4-dot pawprints)
+    for (const fp of pet.footprints) {
+      const alpha = (1 - fp.age / 60) * 0.35;
+      ctx.fillStyle = `rgba(160,100,40,${alpha})`;
+      ctx.beginPath(); ctx.arc(fp.x - 2, fp.y - 1, 1.2, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(fp.x + 2, fp.y - 1, 1.2, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(fp.x - 1, fp.y + 1.5, 1.2, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(fp.x + 1, fp.y + 1.5, 1.2, 0, Math.PI * 2); ctx.fill();
+    }
+
+    // Draw pet before agents
+    drawPixelDog(ctx, pet, frame);
+
+    // ===== AGENTS =====
     const animMap = agentAnimRef.current;
     const sortedAgents = [...agents].sort((a, b) => {
       const aa = animMap.get(a.id);
@@ -608,6 +674,41 @@ export default function PixelOffice({ agents, activities = [], onAgentClick }: P
 
       anim.gestureFrame = frame;
 
+      // Agent shadow
+      ctx.fillStyle = 'rgba(0,0,0,0.25)';
+      ctx.beginPath();
+      ctx.ellipse(anim.x, anim.y + 22, 13, 4, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Active agent glow halo
+      if (agent.status === 'active') {
+        const pulse = (Math.sin(frame * 0.06) + 1) / 2;
+        ctx.fillStyle = agent.color + Math.floor((0.12 + pulse * 0.1) * 255).toString(16).padStart(2, '0');
+        ctx.beginPath();
+        ctx.arc(anim.x, anim.y, 20, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // Idle sparkles when idle > 5min
+      if (agent.status === 'idle' && agent.idleMinutes > 5 && frame % 8 === 0) {
+        const sparkAngle = (frame * 0.15 + anim.idleOffset) % (Math.PI * 2);
+        ctx.fillStyle = '#eab30888';
+        ctx.beginPath();
+        ctx.arc(
+          anim.x + Math.cos(sparkAngle) * 16,
+          anim.y + Math.sin(sparkAngle) * 10 - 8,
+          1.5, 0, Math.PI * 2
+        );
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(
+          anim.x + Math.cos(sparkAngle + 2.1) * 14,
+          anim.y + Math.sin(sparkAngle + 2.1) * 8 - 5,
+          1, 0, Math.PI * 2
+        );
+        ctx.fill();
+      }
+
       // Flash effect
       const flash = flashAgentsRef.current.get(agent.id);
       if (flash && Date.now() < flash.until) {
@@ -627,9 +728,7 @@ export default function PixelOffice({ agents, activities = [], onAgentClick }: P
     }
 
     drawAmbient(ctx, frame);
-    if (!isMobile) {
-      drawMiniMap(ctx, agents, animMap);
-    }
+    if (!isMobile) drawMiniMap(ctx, agents, animMap);
   }, [agents, getTargetPosition, isMobile]);
 
   useEffect(() => {
@@ -661,7 +760,6 @@ export default function PixelOffice({ agents, activities = [], onAgentClick }: P
         onTouchEnd={handleTouchEnd}
       />
 
-      {/* Tooltip */}
       {tooltip && (
         <div
           className="fixed z-50 pointer-events-none px-3 py-2 rounded-lg shadow-xl"
@@ -677,7 +775,6 @@ export default function PixelOffice({ agents, activities = [], onAgentClick }: P
         </div>
       )}
 
-      {/* Toast notifications */}
       <div className={`absolute flex flex-col gap-2 z-50 ${
         isMobile ? 'top-2 left-2 right-2' : 'bottom-4 right-4'
       }`} style={{ maxWidth: isMobile ? undefined : 280 }}>
@@ -724,7 +821,6 @@ function drawRoomFloor(ctx: CanvasRenderingContext2D, room: RoomDef) {
   ctx.rect(rx, ry, rw, rh);
   ctx.clip();
 
-  // Solid background
   ctx.fillStyle = floorColor1;
   ctx.fillRect(rx, ry, rw, rh);
 
@@ -736,7 +832,6 @@ function drawRoomFloor(ctx: CanvasRenderingContext2D, room: RoomDef) {
       const sx = ox + (c - r) * twh;
       const sy = oy + (c + r) * thh;
 
-      // Cull off-screen tiles
       if (sx + twh < rx - 2 || sx - twh > rx + rw + 2) continue;
       if (sy + thh < ry - 2 || sy - thh > ry + rh + 2) continue;
 
@@ -751,36 +846,41 @@ function drawRoomFloor(ctx: CanvasRenderingContext2D, room: RoomDef) {
       ctx.fillStyle = isLight ? floorColor1 : floorColor2;
       ctx.fill();
 
-      // Subtle grout lines
       ctx.strokeStyle = 'rgba(0,0,0,0.06)';
       ctx.lineWidth = 0.5;
       ctx.stroke();
     }
   }
 
-  // Warm radial vignette
-  const grad = ctx.createRadialGradient(ox, oy - 20, 10, ox, oy, Math.max(rw, rh) * 0.65);
-  grad.addColorStop(0, 'rgba(255,248,235,0.06)');
-  grad.addColorStop(1, 'rgba(0,0,0,0.06)');
-  ctx.fillStyle = grad;
+  // Ambient mood overlay per room
+  const moodColors: Record<RoomId, string> = {
+    main_office:  'rgba(255,220,150,0.05)',
+    meeting_room: 'rgba(180,60,60,0.10)',
+    server_room:  'rgba(0,80,180,0.12)',
+    kitchen:      'rgba(255,160,80,0.06)',
+    game_room:    'rgba(120,0,200,0.12)',
+    rest_room:    'rgba(0,60,80,0.15)',
+  };
+  const moodGrad = ctx.createRadialGradient(ox, oy, 10, ox, oy, Math.max(rw, rh) * 0.65);
+  moodGrad.addColorStop(0, moodColors[room.id] || 'rgba(255,248,235,0.06)');
+  moodGrad.addColorStop(1, 'rgba(0,0,0,0.06)');
+  ctx.fillStyle = moodGrad;
   ctx.fillRect(rx, ry, rw, rh);
 
   ctx.restore();
 }
 
-// ===== WALLS (3D iso look) =====
+// ===== WALLS =====
 function drawWalls(ctx: CanvasRenderingContext2D) {
   const wallFace = '#D4C4A8';
   const wallTop  = '#E8D5BC';
   const wallEdge = '#C4A882';
   const wallH = 14;
 
-  // Outer border
   ctx.strokeStyle = wallEdge;
   ctx.lineWidth = 2;
   ctx.strokeRect(1, 1, W - 2, H - 2);
 
-  // Horizontal divider at y=260 (top rooms / main office)
   ctx.fillStyle = wallFace;
   ctx.fillRect(0, 260, W, wallH);
   ctx.fillStyle = wallTop;
@@ -788,7 +888,6 @@ function drawWalls(ctx: CanvasRenderingContext2D) {
   ctx.fillStyle = 'rgba(0,0,0,0.12)';
   ctx.fillRect(0, 260 + wallH - 2, W, 2);
 
-  // Horizontal divider at y=520 (main office / bottom rooms)
   ctx.fillStyle = wallFace;
   ctx.fillRect(0, 520, W, wallH);
   ctx.fillStyle = wallTop;
@@ -796,7 +895,6 @@ function drawWalls(ctx: CanvasRenderingContext2D) {
   ctx.fillStyle = 'rgba(0,0,0,0.12)';
   ctx.fillRect(0, 520 + wallH - 2, W, 2);
 
-  // Vertical divider at x=480 (meeting / server room)
   ctx.fillStyle = wallFace;
   ctx.fillRect(480, 0, 8, 260);
   ctx.fillStyle = wallTop;
@@ -804,7 +902,6 @@ function drawWalls(ctx: CanvasRenderingContext2D) {
   ctx.fillStyle = wallEdge;
   ctx.fillRect(488, 0, 1, 260);
 
-  // Vertical divider at x=240 (kitchen / game room)
   ctx.fillStyle = wallFace;
   ctx.fillRect(240, 520, 8, H - 520);
   ctx.fillStyle = wallTop;
@@ -812,34 +909,25 @@ function drawWalls(ctx: CanvasRenderingContext2D) {
   ctx.fillStyle = wallEdge;
   ctx.fillRect(248, 520, 1, H - 520);
 
-  // Vertical divider at x=580 (game room / rest room)
   ctx.fillStyle = wallFace;
   ctx.fillRect(580, 520, 8, H - 520);
   ctx.fillStyle = wallTop;
   ctx.fillRect(578, 520, 4, H - 520);
   ctx.fillStyle = wallEdge;
   ctx.fillRect(588, 520, 1, H - 520);
-
-  // Glass tint for meeting room
-  ctx.fillStyle = 'rgba(180,200,240,0.04)';
-  ctx.fillRect(4, 4, 472, 252);
 }
 
 // ===== DOORWAYS =====
 function drawDoorways(ctx: CanvasRenderingContext2D) {
   const wallFace = '#D4C4A8';
   for (const door of DOORWAYS) {
-    // Clear wall section
     ctx.fillStyle = wallFace;
     ctx.fillRect(door.x, door.y, door.w, door.h + 4);
-    // Door frame sides
     ctx.fillStyle = '#B89E82';
     ctx.fillRect(door.x - 2, door.y, 4, door.h + 4);
     ctx.fillRect(door.x + door.w - 2, door.y, 4, door.h + 4);
-    // Door opening  (warm dark)
     ctx.fillStyle = '#C8B496';
     ctx.fillRect(door.x + 2, door.y + 2, door.w - 4, door.h);
-    // Threshold line
     ctx.fillStyle = '#A89070';
     ctx.fillRect(door.x, door.y + door.h + 2, door.w, 2);
   }
@@ -855,9 +943,17 @@ function drawBaseboards(ctx: CanvasRenderingContext2D) {
   ctx.fillRect(580, H - 3, 380, 3);
 }
 
-// ===== ROOM LABELS =====
+// ===== ROOM LABELS (per-room colors) =====
 function drawRoomLabel(ctx: CanvasRenderingContext2D, room: RoomDef) {
-  ctx.fillStyle = 'rgba(120,100,80,0.5)';
+  const labelColors: Record<RoomId, string> = {
+    main_office:  'rgba(120,100,80,0.55)',
+    meeting_room: 'rgba(220,80,60,0.85)',
+    server_room:  'rgba(0,229,255,0.75)',
+    kitchen:      'rgba(160,110,60,0.6)',
+    game_room:    'rgba(255,0,255,0.85)',
+    rest_room:    'rgba(128,255,204,0.75)',
+  };
+  ctx.fillStyle = labelColors[room.id] || 'rgba(120,100,80,0.5)';
   ctx.font = 'bold 10px sans-serif';
   ctx.textAlign = 'left';
   ctx.fillText(`${room.emoji} ${room.label}`, room.x + 8, room.y + 16);
@@ -876,7 +972,6 @@ function drawWeatherWindows(ctx: CanvasRenderingContext2D, frame: number) {
   ];
 
   for (const win of windows) {
-    // Frame (warm wood)
     ctx.fillStyle = '#C4A882';
     ctx.fillRect(win.x - 3, win.y - 3, win.w + 6, win.h + 6);
     ctx.fillStyle = '#A88C6A';
@@ -919,12 +1014,10 @@ function drawWeatherWindows(ctx: CanvasRenderingContext2D, frame: number) {
       ctx.fill();
     }
 
-    // Window dividers
     ctx.fillStyle = 'rgba(160,140,110,0.7)';
     ctx.fillRect(win.x + win.w / 2 - 1, win.y, 2, win.h);
     ctx.fillRect(win.x, win.y + win.h / 2 - 1, win.w, 2);
 
-    // Light spill on floor
     ctx.fillStyle = isDay ? 'rgba(180,220,255,0.04)' : 'rgba(60,80,140,0.03)';
     ctx.fillRect(win.x - 12, win.y + win.h + 4, win.w + 24, 45);
   }
@@ -957,167 +1050,436 @@ function drawWallDecorations(ctx: CanvasRenderingContext2D, frame: number) {
     ctx.fillRect(sx + 2, 278, 6, 1);
   }
 
-  // Water cooler (iso box style)
-  drawIsoBox(ctx, 38, 370, 20, 10, 24, '#D4E8F0', '#9ABBC8', '#B0CCD8', 'rgba(0,0,0,0.15)');
-  // Water jug on top
-  ctx.fillStyle = '#4488CC88';
+  // Suppress frame usage warning
+  void frame;
+}
+
+// ===== WAR ROOM (meeting_room) =====
+function drawWarRoom(ctx: CanvasRenderingContext2D, frame: number) {
+  const tx = 210, ty = 128;
+
+  // Dark dramatic oval table
+  ctx.fillStyle = '#3D2B1F';
   ctx.beginPath();
-  ctx.ellipse(38, 360, 8, 5, 0, 0, Math.PI * 2);
+  ctx.ellipse(tx, ty, 110, 46, 0, 0, Math.PI * 2);
   ctx.fill();
-  // Steam from coffee machine area
-  if (frame % 60 < 30) {
-    ctx.fillStyle = 'rgba(220,210,200,0.12)';
+  ctx.fillStyle = '#2E1F14';
+  ctx.beginPath();
+  ctx.ellipse(tx, ty + 14, 110, 46, 0, 0, Math.PI, false);
+  ctx.fill();
+  // Table sheen
+  ctx.fillStyle = 'rgba(255,200,120,0.07)';
+  ctx.beginPath();
+  ctx.ellipse(tx - 18, ty - 12, 52, 18, -0.2, 0, Math.PI * 2);
+  ctx.fill();
+  drawShadow(ctx, tx, ty + 32, 96, 14);
+
+  // Chairs in alternating agent colors
+  const agentColors = ['#9333ea','#3b82f6','#22c55e','#14b8a6','#ec4899','#ef4444'];
+  const chairPositions = [
+    { x: 98, y: 108 }, { x: 178, y: 80 }, { x: 258, y: 80 },
+    { x: 338, y: 108 }, { x: 108, y: 162 }, { x: 188, y: 188 },
+    { x: 268, y: 188 }, { x: 350, y: 162 },
+  ];
+  for (let i = 0; i < chairPositions.length; i++) {
+    const c = chairPositions[i];
+    const col = agentColors[i % agentColors.length];
+    drawIsoBox(ctx, c.x, c.y, 20, 10, 10,
+      lightenColor(col, 0.15), darkenColor(col, 0.25), col, 'rgba(0,0,0,0.2)');
+  }
+
+  // Wall-mounted screen with blue glow
+  const scrGlow = (Math.sin(frame * 0.02) + 1) / 2;
+  ctx.shadowBlur = 12 + scrGlow * 8;
+  ctx.shadowColor = '#1A3A5C';
+  ctx.fillStyle = '#0A1820';
+  ctx.fillRect(18, 18, 120, 68);
+  ctx.shadowBlur = 0;
+  // Screen glow lines
+  ctx.fillStyle = `rgba(0,120,220,${0.15 + scrGlow * 0.12})`;
+  ctx.fillRect(18, 18, 120, 68);
+  ctx.strokeStyle = `rgba(0,180,255,${0.3 + scrGlow * 0.2})`;
+  ctx.lineWidth = 1;
+  ctx.strokeRect(19, 19, 118, 66);
+  // Screen content: data lines
+  ctx.fillStyle = `rgba(0,200,255,${0.5 + scrGlow * 0.2})`;
+  ctx.font = '5px monospace';
+  ctx.textAlign = 'left';
+  for (let l = 0; l < 6; l++) {
+    const lw = 20 + ((l * 17 + Math.floor(frame * 0.1)) % 80);
+    ctx.fillRect(24, 26 + l * 9, lw, 1.5);
+  }
+
+  // Overall room tension glow
+  ctx.fillStyle = `rgba(180,40,40,${0.03 + scrGlow * 0.03})`;
+  ctx.fillRect(0, 0, 480, 260);
+}
+
+// ===== THE VAULT (server_room) =====
+function drawTheVault(ctx: CanvasRenderingContext2D, frame: number) {
+  // Cold blue ambient
+  const blueGlow = (Math.sin(frame * 0.02) + 1) / 2;
+  ctx.fillStyle = `rgba(0,40,120,${0.06 + blueGlow * 0.04})`;
+  ctx.fillRect(480, 0, 480, 260);
+
+  // 4 server racks
+  const rackPositions = [
+    { x: 560, y: 90 }, { x: 650, y: 75 }, { x: 760, y: 90 }, { x: 860, y: 75 },
+  ];
+  for (let i = 0; i < rackPositions.length; i++) {
+    const rp = rackPositions[i];
+    drawServerRack(ctx, rp.x, rp.y, frame, i);
+  }
+
+  // Cable floor traces between racks
+  ctx.strokeStyle = `rgba(0,100,200,${0.25 + blueGlow * 0.15})`;
+  ctx.lineWidth = 1.5;
+  for (let i = 0; i < rackPositions.length - 1; i++) {
+    const a = rackPositions[i];
+    const b = rackPositions[i + 1];
     ctx.beginPath();
-    ctx.arc(38, 358, 4, 0, Math.PI * 2);
+    ctx.moveTo(a.x, a.y + 80);
+    ctx.bezierCurveTo(a.x + 20, a.y + 100, b.x - 20, b.y + 100, b.x, b.y + 80);
+    ctx.stroke();
+  }
+
+  // Temperature display
+  ctx.fillStyle = '#0A0A18';
+  ctx.fillRect(900, 40, 48, 22);
+  ctx.strokeStyle = '#00E5FF44';
+  ctx.lineWidth = 1;
+  ctx.strokeRect(900, 40, 48, 22);
+  ctx.fillStyle = '#00E5FF';
+  ctx.font = 'bold 10px monospace';
+  ctx.textAlign = 'center';
+  ctx.fillText('19°C', 924, 55);
+
+  // Radial ambient glow from racks
+  for (const rp of rackPositions) {
+    const rg = ctx.createRadialGradient(rp.x, rp.y + 40, 5, rp.x, rp.y + 40, 60);
+    rg.addColorStop(0, `rgba(0,150,255,${0.08 + blueGlow * 0.06})`);
+    rg.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = rg;
+    ctx.fillRect(rp.x - 60, rp.y - 10, 120, 120);
+  }
+}
+
+function drawServerRack(ctx: CanvasRenderingContext2D, cx: number, cy: number, frame: number, idx: number) {
+  // Tall iso box
+  drawIsoBox(ctx, cx, cy, 38, 19, 120,
+    '#2A2A3A', '#18181E', '#222230', '#111118');
+
+  // LED dots on front face (right face of iso box)
+  for (let j = 0; j < 8; j++) {
+    const ledY = cy + 18 + j * 14;
+    // Green activity LED
+    const pulse = (Math.sin(frame * 0.04 + idx * 1.7 + j * 0.9) + 1) / 2;
+    const g = Math.floor(80 + pulse * 175);
+    ctx.fillStyle = `rgb(0,${g},0)`;
+    ctx.beginPath();
+    ctx.arc(cx + 8, ledY, 1.8, 0, Math.PI * 2);
+    ctx.fill();
+    // Alert or blue LED (alternating)
+    const isAlert = Math.sin(frame * 0.025 + idx * 2.3 + j) > 0.94;
+    ctx.fillStyle = isAlert ? '#ef4444' : `rgba(0,180,255,${0.5 + pulse * 0.5})`;
+    ctx.beginPath();
+    ctx.arc(cx + 14, ledY, 1.8, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  drawShadow(ctx, cx, cy + 130, 22, 5);
+}
+
+// ===== THE FLOOR (main_office) =====
+function drawTheFloor(ctx: CanvasRenderingContext2D, frame: number, agents: AgentState[]) {
+  // Large plants in corners
+  drawIsoPlant(ctx, 55, 296, frame, 0);
+  drawIsoPlant(ctx, 910, 296, frame, 100);
+  drawIsoPlant(ctx, 55, 458, frame, 200);
+  drawIsoPlant(ctx, 910, 458, frame, 300);
+
+  // Water cooler
+  ctx.shadowBlur = 4;
+  ctx.shadowColor = '#B3D9F044';
+  drawIsoBox(ctx, 38, 368, 20, 10, 28, '#B3D9F0', '#7AADC8', '#98C4DC', 'rgba(0,0,0,0.15)');
+  ctx.shadowBlur = 0;
+  // Water jug
+  ctx.fillStyle = '#4488CC66';
+  ctx.beginPath();
+  ctx.ellipse(38, 357, 8, 5, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Ceiling light diamonds above each desk cluster
+  const lightX = [80, 220, 360, 520, 680, 840, 140, 300, 460, 620, 780];
+  for (const lx of lightX) {
+    const ly = 275;
+    const glow = (Math.sin(frame * 0.02 + lx * 0.01) + 1) / 2;
+    drawIsoDiamond(ctx, lx, ly, 14, 7, `rgba(255,230,120,${0.7 + glow * 0.15})`);
+    // Light spill on floor
+    const lg = ctx.createRadialGradient(lx, ly + 30, 2, lx, ly + 30, 50);
+    lg.addColorStop(0, `rgba(255,240,180,${0.06 + glow * 0.04})`);
+    lg.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = lg;
+    ctx.fillRect(lx - 50, ly + 5, 100, 80);
+  }
+
+  // Window light diagonal stripe
+  ctx.fillStyle = 'rgba(255,240,200,0.04)';
+  ctx.beginPath();
+  ctx.moveTo(0, 260);
+  ctx.lineTo(120, 260);
+  ctx.lineTo(0, 340);
+  ctx.closePath();
+  ctx.fill();
+
+  // Desks — back row first
+  const row0 = agents.filter(a => { const d = DESK_LAYOUT[a.desk]; return d && d.row === 0; });
+  const row1 = agents.filter(a => { const d = DESK_LAYOUT[a.desk]; return d && d.row === 1; });
+  for (const agent of row0) {
+    const desk = DESK_LAYOUT[agent.desk];
+    if (desk) drawIsoDesk(ctx, desk.x, desk.y, agent, frame);
+  }
+  for (const agent of row1) {
+    const desk = DESK_LAYOUT[agent.desk];
+    if (desk) drawIsoDesk(ctx, desk.x, desk.y, agent, frame);
+  }
+}
+
+// ===== THE PIT (kitchen) =====
+function drawThePit(ctx: CanvasRenderingContext2D, frame: number) {
+  const kx = 20, ky = 542;
+
+  // L-shaped couch (two iso boxes)
+  drawIsoBox(ctx, kx + 168, ky + 40, 72, 36, 22, '#E8943A', darkenColor('#E8943A', 0.25), darkenColor('#E8943A', 0.12), 'rgba(0,0,0,0.15)');
+  drawIsoBox(ctx, kx + 112, ky + 72, 54, 27, 22, lightenColor('#E8943A', 0.08), darkenColor('#E8943A', 0.28), darkenColor('#E8943A', 0.14), 'rgba(0,0,0,0.15)');
+  // Couch cushion highlights
+  ctx.fillStyle = 'rgba(255,200,100,0.12)';
+  ctx.beginPath();
+  ctx.ellipse(kx + 168, ky + 36, 28, 10, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Espresso machine
+  drawCoffeeMachine(ctx, kx + 58, ky - 10, frame);
+
+  // Small round table (iso box short and wide)
+  drawIsoBox(ctx, kx + 155, ky + 110, 36, 18, 10, '#C4956A', '#8B6914', '#A07830', 'rgba(0,0,0,0.15)');
+  // Two stools
+  drawIsoBox(ctx, kx + 128, ky + 125, 16, 8, 8, '#D4B894', '#A88C66', '#C4A882', 'rgba(0,0,0,0.12)');
+  drawIsoBox(ctx, kx + 182, ky + 125, 16, 8, 8, '#D4B894', '#A88C66', '#C4A882', 'rgba(0,0,0,0.12)');
+
+  // Large corner plant
+  drawIsoPlant(ctx, kx + 205, ky - 5, frame, 50);
+
+  // 'Pixel lives here' subtle paw mark on floor
+  ctx.fillStyle = 'rgba(180,120,60,0.1)';
+  ctx.font = '14px serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('🐾', kx + 90, ky + 75);
+}
+
+function drawCoffeeMachine(ctx: CanvasRenderingContext2D, cx: number, cy: number, frame: number) {
+  drawIsoBox(ctx, cx, cy, 30, 15, 26, '#C8C8C8', '#888888', '#A8A8A8', 'rgba(0,0,0,0.2)');
+  // Control panel
+  ctx.fillStyle = '#444';
+  ctx.fillRect(cx - 10, cy - 9, 10, 6);
+  // Cup
+  ctx.fillStyle = '#F5F5F0';
+  ctx.beginPath();
+  ctx.ellipse(cx + 8, cy + 14, 6, 3.5, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = '#5A3010';
+  ctx.beginPath();
+  ctx.ellipse(cx + 8, cy + 14, 4.5, 2.5, 0, 0, Math.PI * 2);
+  ctx.fill();
+  // Steam
+  const steamOpacity = (Math.sin(frame * 0.05) + 1) / 2;
+  for (let i = 0; i < 3; i++) {
+    const sy = cy - 8 - i * 6 - Math.sin(frame * 0.06 + i) * 3;
+    const sx = cx + Math.sin(frame * 0.04 + i * 1.8) * 3;
+    ctx.fillStyle = `rgba(220,215,210,${(0.35 - i * 0.1) * steamOpacity})`;
+    ctx.beginPath();
+    ctx.arc(sx, sy, 2.5, 0, Math.PI * 2);
     ctx.fill();
   }
 }
 
-// ===== MEETING ROOM =====
-function drawMeetingRoom(ctx: CanvasRenderingContext2D, frame: number) {
-  // Isometric conference table
-  const tx = 210, ty = 128;
-  // Table top (oval-ish using iso box wide and shallow)
-  ctx.fillStyle = '#C4956A';
-  ctx.beginPath();
-  ctx.ellipse(tx, ty, 108, 44, 0, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.fillStyle = '#B8895E';
-  ctx.beginPath();
-  ctx.ellipse(tx, ty, 104, 40, 0, 0, Math.PI * 2);
-  ctx.fill();
-  // Table top highlight
-  ctx.fillStyle = 'rgba(255,235,200,0.15)';
-  ctx.beginPath();
-  ctx.ellipse(tx - 15, ty - 10, 50, 18, -0.2, 0, Math.PI * 2);
-  ctx.fill();
-  // Table side (3D depth)
-  ctx.fillStyle = '#8B6914';
-  ctx.beginPath();
-  ctx.ellipse(tx, ty + 12, 108, 44, 0, 0, Math.PI);
-  ctx.fill();
-  ctx.beginPath();
-  ctx.ellipse(tx, ty + 12, 104, 40, 0, 0, Math.PI);
-  ctx.fill();
-  // Shadow
-  drawShadow(ctx, tx, ty + 30, 95, 14);
+// ===== THE ARCADE (game_room) =====
+function drawTheArcade(ctx: CanvasRenderingContext2D, frame: number) {
+  const gx = 260, gy = 525;
 
-  // Chairs around table
-  const chairPositions = [
-    { x: 100, y: 110, color: '#B8A090' },
-    { x: 180, y: 80, color: '#B8A090' },
-    { x: 260, y: 80, color: '#B8A090' },
-    { x: 340, y: 110, color: '#B8A090' },
-    { x: 110, y: 160, color: '#B8A090' },
-    { x: 190, y: 185, color: '#B8A090' },
-    { x: 270, y: 185, color: '#B8A090' },
-    { x: 350, y: 160, color: '#B8A090' },
+  // Neon strip along floor edge
+  const neonPulse = (Math.sin(frame * 0.08) + 1) / 2;
+  ctx.shadowBlur = 8;
+  ctx.shadowColor = '#FF00FF';
+  ctx.strokeStyle = `rgba(255,0,255,${0.6 + neonPulse * 0.3})`;
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(gx, gy + 195);
+  ctx.lineTo(gx + 330, gy + 195);
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+
+  // Arcade machine 1 — hot pink
+  drawArcadeMachine(ctx, gx + 50, gy + 60, '#FF4080', frame);
+  // Arcade machine 2 — cyan
+  drawArcadeMachine(ctx, gx + 160, gy + 45, '#40C0FF', frame);
+
+  // Bean bag chairs
+  const beanbags = [
+    { x: gx + 255, y: gy + 75, color: '#6A20A0' },
+    { x: gx + 290, y: gy + 105, color: '#1A4080' },
+    { x: gx + 230, y: gy + 110, color: '#104A30' },
+    { x: gx + 265, y: gy + 140, color: '#802040' },
   ];
-  for (const c of chairPositions) {
-    drawIsoBox(ctx, c.x, c.y, 18, 9, 8, lightenColor(c.color, 0.15), darkenColor(c.color, 0.15), c.color, 'rgba(0,0,0,0.12)');
+  for (const bb of beanbags) {
+    drawShadow(ctx, bb.x, bb.y + 12, 20, 6);
+    ctx.fillStyle = bb.color;
+    ctx.beginPath();
+    ctx.ellipse(bb.x, bb.y, 20, 14, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = lightenColor(bb.color, 0.35) + '44';
+    ctx.beginPath();
+    ctx.ellipse(bb.x - 4, bb.y - 5, 10, 6, 0, 0, Math.PI * 2);
+    ctx.fill();
   }
-
-  // Whiteboard (iso box flat against wall)
-  drawIsoBox(ctx, 60, 42, 100, 10, 52, '#F4F0E8', '#D8D0C0', '#E4DDD0', 'rgba(0,0,0,0.1)');
-  // Board content
-  ctx.fillStyle = '#8B7355';
-  ctx.font = '7px sans-serif';
-  ctx.textAlign = 'left';
-  ctx.fillText('Sprint Goals:', 22, 25);
-  ctx.fillStyle = '#3B82F6';
-  ctx.fillText('• Isometric UI ✓', 22, 36);
-  ctx.fillStyle = '#22C55E';
-  ctx.fillText('• Live Mode', 22, 47);
-  ctx.fillStyle = '#EF4444';
-  ctx.fillText('• Deploy', 22, 58);
-
-  // Projector screen glow (animate)
-  const projGlow = (Math.sin(frame * 0.02) + 1) / 2;
-  ctx.fillStyle = `rgba(200,220,255,${0.03 + projGlow * 0.04})`;
-  ctx.fillRect(0, 0, 480, 260);
 }
 
-// ===== SERVER ROOM =====
-function drawServerRoom(ctx: CanvasRenderingContext2D, frame: number) {
-  const baseX = 530;
+function drawArcadeMachine(ctx: CanvasRenderingContext2D, cx: number, cy: number, screenColor: string, frame: number) {
+  const bodyColor = screenColor === '#FF4080' ? '#1A0820' : '#081820';
+  drawIsoBox(ctx, cx, cy, 32, 16, 58,
+    lightenColor(bodyColor, 0.05), darkenColor(bodyColor, 0.1), bodyColor, 'rgba(0,0,0,0.3)');
 
-  for (let i = 0; i < 3; i++) {
-    const rx = baseX + i * 120;
-    const ry = 50;
-
-    // Server rack as iso box
-    drawIsoBox(ctx, rx + 20, ry + 10, 40, 20, 160, '#3A3A4E', '#22222E', '#2E2E3E', '#111118');
-
-    // Unit LEDs
-    for (let j = 0; j < 6; j++) {
-      const uy = ry + 30 + j * 24;
-      const pulse = (Math.sin(frame * 0.03 + i * 1.5 + j * 0.8) + 1) / 2;
-      const g = Math.floor(100 + pulse * 155);
-      ctx.fillStyle = `rgb(0,${g},0)`;
-      ctx.beginPath();
-      ctx.arc(rx + 36, uy, 2, 0, Math.PI * 2);
-      ctx.fill();
-
-      const isAlert = Math.sin(frame * 0.02 + i * 2.1) > 0.92;
-      const bluePulse = (Math.sin(frame * 0.04 + i + j * 0.5) + 1) / 2;
-      ctx.fillStyle = isAlert ? '#ef4444' : `rgba(59,130,246,${0.4 + bluePulse * 0.6})`;
-      ctx.beginPath();
-      ctx.arc(rx + 36, uy + 8, 2, 0, Math.PI * 2);
-      ctx.fill();
-    }
-
-    drawShadow(ctx, rx + 20, ry + 175, 22, 5);
+  // Screen on top face
+  const scrPulse = (Math.sin(frame * 0.07 + cx * 0.01) + 1) / 2;
+  ctx.shadowBlur = 10 + scrPulse * 6;
+  ctx.shadowColor = screenColor;
+  ctx.fillStyle = screenColor + 'AA';
+  ctx.fillRect(cx - 11, cy - 10, 22, 14);
+  ctx.shadowBlur = 0;
+  // Screen scanlines
+  ctx.fillStyle = 'rgba(0,0,0,0.15)';
+  for (let sl = 0; sl < 7; sl++) {
+    ctx.fillRect(cx - 11, cy - 10 + sl * 2, 22, 1);
   }
 
-  // Temperature display
-  ctx.fillStyle = '#111118';
-  ctx.fillRect(900, 40, 46, 22);
-  ctx.strokeStyle = '#3a3a5e';
-  ctx.lineWidth = 1;
-  ctx.strokeRect(900, 40, 46, 22);
-  ctx.fillStyle = '#22c55e';
-  ctx.font = 'bold 10px monospace';
-  ctx.textAlign = 'center';
-  ctx.fillText('22°C', 923, 55);
+  // Controls (front face buttons)
+  ctx.fillStyle = '#FF4444';
+  ctx.beginPath(); ctx.arc(cx + 8, cy + 36, 2.5, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = '#44AAFF';
+  ctx.beginPath(); ctx.arc(cx + 14, cy + 42, 2.5, 0, Math.PI * 2); ctx.fill();
 
-  // Cables
-  ctx.strokeStyle = '#4a4a6e55';
-  ctx.lineWidth = 2;
-  for (let i = 0; i < 2; i++) {
+  drawShadow(ctx, cx, cy + 70, 18, 5);
+}
+
+// ===== SLEEP PODS (rest_room) =====
+function drawSleepPods(ctx: CanvasRenderingContext2D, frame: number) {
+  const rx = 580, ry = 520;
+
+  // Very dark ambient
+  ctx.fillStyle = 'rgba(5,5,15,0.3)';
+  ctx.fillRect(rx, ry, 380, 200);
+
+  // Star ceiling
+  const starPositions = [
+    [40,18],[80,12],[120,22],[160,10],[200,20],[250,16],[300,8],[330,24],[60,38],[180,36],
+  ];
+  for (const [sx, sy] of starPositions) {
+    const twinkle = Math.sin(frame * 0.04 + sx * 0.2 + sy * 0.3);
+    ctx.fillStyle = `rgba(200,200,255,${Math.max(0.08, 0.18 + twinkle * 0.15)})`;
+    ctx.fillRect(rx + sx, ry + sy, 1.5, 1.5);
+  }
+
+  // 3 sleep pods
+  const podPositions = [
+    { x: rx + 68, y: ry + 80 },
+    { x: rx + 198, y: ry + 70 },
+    { x: rx + 318, y: ry + 80 },
+  ];
+  for (let i = 0; i < podPositions.length; i++) {
+    drawSleepPod(ctx, podPositions[i].x, podPositions[i].y, frame, i);
+  }
+
+  // Extra beds for overflow agents
+  const bedColors = ['#1A1430', '#12182A', '#101828'];
+  const extraBeds = [
+    { x: rx + 68, y: ry + 145 }, { x: rx + 198, y: ry + 138 },
+    { x: rx + 318, y: ry + 145 }, { x: rx + 90, y: ry + 175 },
+    { x: rx + 230, y: ry + 168 }, { x: rx + 350, y: ry + 175 },
+  ];
+  for (let i = 0; i < extraBeds.length; i++) {
+    const pos = extraBeds[i];
+    const col = bedColors[i % bedColors.length];
+    drawIsoBox(ctx, pos.x, pos.y, 46, 12, 7,
+      lightenColor(col, 0.1), darkenColor(col, 0.1), col, 'rgba(0,0,0,0.15)');
+    ctx.fillStyle = lightenColor(col, 0.25) + '44';
     ctx.beginPath();
-    ctx.moveTo(baseX + i * 120 + 20, 220);
-    ctx.bezierCurveTo(baseX + i * 120 + 30, 240, baseX + (i + 1) * 120 + 10, 240, baseX + (i + 1) * 120 + 20, 220);
-    ctx.stroke();
+    ctx.ellipse(pos.x - 14, pos.y - 3, 7, 3.5, 0, 0, Math.PI * 2);
+    ctx.fill();
   }
+}
+
+function drawSleepPod(ctx: CanvasRenderingContext2D, cx: number, cy: number, frame: number, idx: number) {
+  const tealPulse = (Math.sin(frame * 0.04 + idx * 1.4) + 1) / 2;
+  // Pod body
+  drawIsoBox(ctx, cx, cy, 70, 20, 20,
+    '#1E1E2E', '#111118', '#18182A', 'rgba(0,0,0,0.2)');
+  // Visor strip on top face
+  ctx.shadowBlur = 8 + tealPulse * 6;
+  ctx.shadowColor = '#00FFAA';
+  ctx.fillStyle = `rgba(0,255,170,${0.6 + tealPulse * 0.3})`;
+  ctx.fillRect(cx - 28, cy - 8, 56, 4);
+  ctx.shadowBlur = 0;
+  // Pod shadow
+  drawShadow(ctx, cx, cy + 28, 36, 6);
+}
+
+// ===== ISO PLANT =====
+function drawIsoPlant(ctx: CanvasRenderingContext2D, x: number, y: number, frame: number, offset: number) {
+  const sway = Math.sin(frame * 0.012 + offset * 0.01) * 1.2;
+  drawShadow(ctx, x, y + 18, 10, 3);
+  drawIsoBox(ctx, x, y + 10, 18, 9, 12, '#C4845A', '#8B5A30', '#A86E42', 'rgba(0,0,0,0.15)');
+  ctx.fillStyle = '#5A3A20';
+  ctx.beginPath();
+  ctx.ellipse(x, y + 5, 7, 3.5, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = '#166534';
+  ctx.fillRect(x - 1, y - 10, 2, 14);
+  // Three stacked leaf circles
+  ctx.fillStyle = '#5C8A3C';
+  ctx.beginPath();
+  ctx.ellipse(x + sway - 4, y - 5, 10, 5, -0.3, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.beginPath();
+  ctx.ellipse(x + sway + 4, y - 8, 10, 5, 0.3, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = '#4A7A2A';
+  ctx.beginPath();
+  ctx.ellipse(x + sway, y - 13, 7, 4, 0, 0, Math.PI * 2);
+  ctx.fill();
 }
 
 // ===== ISO DESK =====
 function drawIsoDesk(ctx: CanvasRenderingContext2D, x: number, y: number, agent: AgentState, frame: number) {
-  // Desk box
   const deskTop = '#C4956A';
   const deskLeft = '#8B6914';
   const deskRight = '#A07830';
   drawIsoBox(ctx, x, y + 18, 52, 26, 18, deskTop, deskLeft, deskRight, 'rgba(0,0,0,0.18)');
 
-  // Monitor
   const monContent = MONITOR_CONTENT[agent.desk] || 'default';
   drawIsoMonitor(ctx, x - 6, y - 4, agent.color, frame, monContent);
 
-  // Chair behind desk
-  drawIsoBox(ctx, x, y + 46, 20, 10, 10, lightenColor(agent.color, 0.1), darkenColor(agent.color, 0.2), agent.color, 'rgba(0,0,0,0.12)');
+  drawIsoBox(ctx, x, y + 46, 20, 10, 10,
+    lightenColor(agent.color, 0.1), darkenColor(agent.color, 0.2), agent.color, 'rgba(0,0,0,0.12)');
 }
 
 // ===== ISO MONITOR =====
 function drawIsoMonitor(ctx: CanvasRenderingContext2D, x: number, y: number, color: string, frame: number, content: string) {
-  // Monitor box
   drawIsoBox(ctx, x, y, 22, 11, 18, '#2A2A3E', '#1A1A28', '#222232', 'rgba(0,0,0,0.3)');
-  // Screen (on top face)
   const scrX = x - 8, scrY = y - 8;
   const scrW = 16, scrH = 10;
   ctx.fillStyle = '#0a0a14';
   ctx.fillRect(scrX, scrY, scrW, scrH);
   drawMonitorContent(ctx, scrX, scrY, scrW, scrH, color, frame, content);
-  // Stand
   drawIsoBox(ctx, x, y + 18, 8, 4, 5, '#333340', '#222228', '#282830');
 }
 
@@ -1185,221 +1547,6 @@ function drawMonitorContent(ctx: CanvasRenderingContext2D, x: number, y: number,
   }
 }
 
-// ===== MAIN OFFICE DESKS =====
-function drawMainOfficeDesks(ctx: CanvasRenderingContext2D, frame: number, agents: AgentState[]) {
-  // Plants in corners
-  drawIsoPlant(ctx, 55, 296, frame, 0);
-  drawIsoPlant(ctx, 910, 296, frame, 100);
-  drawIsoPlant(ctx, 55, 458, frame, 200);
-  drawIsoPlant(ctx, 910, 458, frame, 300);
-
-  // Sort desks by row (back row first, front row second for proper z-ordering)
-  const row0 = agents.filter(a => {
-    const desk = DESK_LAYOUT[a.desk];
-    return desk && desk.row === 0;
-  });
-  const row1 = agents.filter(a => {
-    const desk = DESK_LAYOUT[a.desk];
-    return desk && desk.row === 1;
-  });
-
-  for (const agent of row0) {
-    const desk = DESK_LAYOUT[agent.desk];
-    if (desk) drawIsoDesk(ctx, desk.x, desk.y, agent, frame);
-  }
-  for (const agent of row1) {
-    const desk = DESK_LAYOUT[agent.desk];
-    if (desk) drawIsoDesk(ctx, desk.x, desk.y, agent, frame);
-  }
-}
-
-// ===== KITCHEN =====
-function drawKitchen(ctx: CanvasRenderingContext2D, frame: number) {
-  const kx = 20, ky = 545;
-
-  // Counter (long iso box)
-  drawIsoBox(ctx, kx + 105, ky + 5, 200, 18, 14, '#C4956A', '#8B6914', '#A07830', 'rgba(0,0,0,0.15)');
-
-  // Coffee machine on counter
-  drawIsoBox(ctx, kx + 35, ky - 10, 28, 14, 22, '#5A5A6E', '#3A3A4E', '#484858', 'rgba(0,0,0,0.2)');
-  // Cup
-  ctx.fillStyle = '#F5F5F0';
-  ctx.beginPath();
-  ctx.ellipse(kx + 48, ky - 12, 5, 3, 0, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.fillStyle = '#8B6914';
-  ctx.beginPath();
-  ctx.ellipse(kx + 48, ky - 12, 4, 2.5, 0, 0, Math.PI * 2);
-  ctx.fill();
-  // Coffee steam
-  for (let i = 0; i < 3; i++) {
-    const sy = ky - 20 - i * 5 - Math.sin(frame * 0.06 + i) * 3;
-    const sx = kx + 48 + Math.sin(frame * 0.04 + i * 1.8) * 3;
-    ctx.fillStyle = `rgba(220,210,200,${0.3 - i * 0.08})`;
-    ctx.beginPath();
-    ctx.arc(sx, sy, 2, 0, Math.PI * 2);
-    ctx.fill();
-  }
-
-  // Fridge (tall iso box)
-  drawIsoBox(ctx, kx + 190, ky - 18, 36, 18, 58, '#E8E8E4', '#C4C4C0', '#D8D8D4', 'rgba(0,0,0,0.12)');
-  // Fridge handle
-  ctx.fillStyle = '#A0A0A0';
-  ctx.fillRect(kx + 175, ky - 8, 2, 14);
-
-  // Microwave (small iso box)
-  drawIsoBox(ctx, kx + 100, ky - 6, 24, 12, 14, '#6A6A7A', '#4A4A5A', '#585868', 'rgba(0,0,0,0.2)');
-
-  // Bar stools
-  drawIsoBox(ctx, kx + 55, ky + 40, 16, 8, 8, '#E8D5BC', '#C4A882', '#D4B894', 'rgba(0,0,0,0.12)');
-  drawIsoBox(ctx, kx + 105, ky + 42, 16, 8, 8, '#E8D5BC', '#C4A882', '#D4B894', 'rgba(0,0,0,0.12)');
-}
-
-// ===== GAME ROOM =====
-function drawGameRoom(ctx: CanvasRenderingContext2D, frame: number) {
-  const gx = 260, gy = 540;
-
-  // Ping pong table (iso surface)
-  ctx.fillStyle = '#2E7A4A';
-  ctx.beginPath();
-  ctx.moveTo(gx + 80, gy + 25);
-  ctx.lineTo(gx + 170, gy + 55);
-  ctx.lineTo(gx + 140, gy + 95);
-  ctx.lineTo(gx + 50, gy + 65);
-  ctx.closePath();
-  ctx.fill();
-  // Table net
-  ctx.strokeStyle = '#FFFFFF88';
-  ctx.lineWidth = 1.5;
-  ctx.beginPath();
-  ctx.moveTo(gx + 95, gy + 55);
-  ctx.lineTo(gx + 125, gy + 60);
-  ctx.stroke();
-  // Table legs
-  ctx.strokeStyle = '#4A4A4A';
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.moveTo(gx + 80, gy + 25); ctx.lineTo(gx + 80, gy + 35);
-  ctx.moveTo(gx + 170, gy + 55); ctx.lineTo(gx + 170, gy + 65);
-  ctx.moveTo(gx + 140, gy + 95); ctx.lineTo(gx + 140, gy + 105);
-  ctx.moveTo(gx + 50, gy + 65); ctx.lineTo(gx + 50, gy + 75);
-  ctx.stroke();
-  drawShadow(ctx, gx + 108, gy + 80, 50, 8);
-
-  // Arcade cabinet (iso box)
-  drawIsoBox(ctx, gx + 215, gy + 15, 36, 18, 58, '#1A1A3E', '#0E0E28', '#141432', 'rgba(0,0,0,0.3)');
-  // Arcade screen
-  const glowColor = `hsl(${(frame * 2) % 360}, 70%, 50%)`;
-  ctx.fillStyle = glowColor + '55';
-  ctx.fillRect(gx + 200, gy + 2, 26, 18);
-  ctx.fillStyle = '#333';
-  ctx.fillRect(gx + 209, gy + 38, 6, 6);
-  drawShadow(ctx, gx + 215, gy + 80, 20, 5);
-
-  // Beanbags
-  const beanbags = [
-    { x: gx + 290, y: gy + 55, color: '#5A3080' },
-    { x: gx + 320, y: gy + 80, color: '#204070' },
-    { x: gx + 275, y: gy + 95, color: '#205040' },
-  ];
-  for (const bb of beanbags) {
-    drawShadow(ctx, bb.x, bb.y + 10, 18, 5);
-    ctx.fillStyle = bb.color;
-    ctx.beginPath();
-    ctx.ellipse(bb.x, bb.y, 18, 12, 0, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.fillStyle = lightenColor(bb.color, 0.3) + '44';
-    ctx.beginPath();
-    ctx.ellipse(bb.x - 3, bb.y - 4, 10, 5, 0, 0, Math.PI * 2);
-    ctx.fill();
-  }
-}
-
-// ===== REST ROOM =====
-function drawRestRoom(ctx: CanvasRenderingContext2D, frame: number) {
-  const rx = 580, ry = 520;
-
-  // Dim ambient
-  ctx.fillStyle = 'rgba(10,5,20,0.2)';
-  ctx.fillRect(rx, ry, 380, 200);
-
-  // Moon & stars decal on wall
-  ctx.fillStyle = 'rgba(255,255,180,0.2)';
-  ctx.beginPath();
-  ctx.arc(rx + 330, ry + 28, 14, 0, Math.PI * 2);
-  ctx.fill();
-  const restStars = [[40,18],[80,12],[120,22],[160,10],[200,20],[250,16],[100,32],[180,36],[60,38],[280,24]];
-  for (const [sx, sy] of restStars) {
-    const twinkle = Math.sin(frame * 0.04 + sx * 0.2 + sy * 0.3);
-    ctx.fillStyle = `rgba(200,200,255,${Math.max(0.05, 0.12 + twinkle * 0.1)})`;
-    ctx.fillRect(rx + sx, ry + sy, 1, 1);
-  }
-
-  // Beds (iso flat boxes)
-  const bedColors = ['#3A2858', '#2A3858', '#2A3A48', '#3A2A40'];
-  const bedPositions = [
-    { x: rx + 50, y: ry + 68 },
-    { x: rx + 135, y: ry + 63 },
-    { x: rx + 220, y: ry + 68 },
-    { x: rx + 305, y: ry + 63 },
-    { x: rx + 70, y: ry + 130 },
-    { x: rx + 155, y: ry + 135 },
-    { x: rx + 240, y: ry + 130 },
-    { x: rx + 330, y: ry + 135 },
-    { x: rx + 95, y: ry + 175 },
-    { x: rx + 190, y: ry + 178 },
-    { x: rx + 285, y: ry + 175 },
-  ];
-  for (let i = 0; i < bedPositions.length; i++) {
-    const pos = bedPositions[i];
-    const col = bedColors[i % bedColors.length];
-    drawIsoBox(ctx, pos.x, pos.y, 50, 14, 8, lightenColor(col, 0.1), darkenColor(col, 0.1), col, 'rgba(0,0,0,0.15)');
-    // Pillow
-    ctx.fillStyle = lightenColor(col, 0.3) + '66';
-    ctx.beginPath();
-    ctx.ellipse(pos.x - 14, pos.y - 4, 8, 4, 0, 0, Math.PI * 2);
-    ctx.fill();
-  }
-
-  // Night light glow
-  const nlPulse = (Math.sin(frame * 0.03) + 1) / 2;
-  const nlGrad = ctx.createRadialGradient(rx + 355, ry + 175, 2, rx + 355, ry + 175, 35);
-  nlGrad.addColorStop(0, `rgba(147,51,234,${0.12 + nlPulse * 0.1})`);
-  nlGrad.addColorStop(1, 'rgba(0,0,0,0)');
-  ctx.fillStyle = nlGrad;
-  ctx.fillRect(rx + 320, ry + 140, 70, 70);
-  // Night light device
-  drawIsoBox(ctx, rx + 355, ry + 176, 8, 4, 6, '#3A2A50', '#2A1A40', '#302040');
-}
-
-// ===== ISO PLANT =====
-function drawIsoPlant(ctx: CanvasRenderingContext2D, x: number, y: number, frame: number, offset: number) {
-  const sway = Math.sin(frame * 0.012 + offset * 0.01) * 1.2;
-  drawShadow(ctx, x, y + 18, 10, 3);
-  // Pot (iso box)
-  drawIsoBox(ctx, x, y + 10, 18, 9, 12, '#C4845A', '#8B5A30', '#A86E42', 'rgba(0,0,0,0.15)');
-  // Soil
-  ctx.fillStyle = '#5A3A20';
-  ctx.beginPath();
-  ctx.ellipse(x, y + 5, 7, 3.5, 0, 0, Math.PI * 2);
-  ctx.fill();
-  // Stem
-  ctx.fillStyle = '#166534';
-  ctx.fillRect(x - 1, y - 10, 2, 14);
-  // Leaves
-  ctx.fillStyle = '#22c55e';
-  ctx.beginPath();
-  ctx.ellipse(x + sway - 4, y - 6, 9, 4, -0.3, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.beginPath();
-  ctx.ellipse(x + sway + 4, y - 8, 9, 4, 0.3, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.fillStyle = '#4ade80';
-  ctx.beginPath();
-  ctx.ellipse(x + sway, y - 12, 6, 3, 0, 0, Math.PI * 2);
-  ctx.fill();
-}
-
 // ===== CLOCK =====
 function drawClock(ctx: CanvasRenderingContext2D) {
   const now = new Date();
@@ -1422,7 +1569,6 @@ function drawDayNightOverlay(ctx: CanvasRenderingContext2D) {
   if (aestHour >= 22 || aestHour < 6) {
     ctx.fillStyle = 'rgba(0,0,20,0.22)';
     ctx.fillRect(0, 0, W, H);
-    // Warm lamp glow spots
     const lamps = [{ x: 120, y: 320 }, { x: 400, y: 320 }, { x: 680, y: 320 }];
     for (const lamp of lamps) {
       const grad = ctx.createRadialGradient(lamp.x, lamp.y, 5, lamp.x, lamp.y, 70);
@@ -1478,8 +1624,93 @@ function drawMiniMap(ctx: CanvasRenderingContext2D, agents: AgentState[], animMa
   }
 }
 
-// ===== AGENT DRAWING (CHIBI ISO STYLE) =====
+// ===== PIXEL THE DOG =====
+function drawPixelDog(ctx: CanvasRenderingContext2D, pet: PetState, frame: number) {
+  const { x, y, wagFrame } = pet;
 
+  // Shadow
+  ctx.fillStyle = 'rgba(0,0,0,0.18)';
+  ctx.beginPath();
+  ctx.ellipse(x, y + 8, 12, 4, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Body
+  ctx.fillStyle = '#C8860A';
+  ctx.beginPath();
+  ctx.ellipse(x, y, 9, 6, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Belly lighter patch
+  ctx.fillStyle = '#DCA840';
+  ctx.beginPath();
+  ctx.ellipse(x + 1, y + 1, 5, 3, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Head (front-right of body)
+  ctx.fillStyle = '#D4920C';
+  ctx.beginPath();
+  ctx.arc(x + 8, y - 3, 6, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Floppy ears
+  ctx.fillStyle = '#8B5E0A';
+  ctx.beginPath();
+  ctx.ellipse(x + 5, y + 2, 3, 5, -0.4, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.beginPath();
+  ctx.ellipse(x + 11, y + 1, 3, 5, 0.4, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Eyes
+  ctx.fillStyle = '#111';
+  ctx.beginPath(); ctx.arc(x + 7, y - 4, 1.2, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.arc(x + 10, y - 4, 1.2, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = 'rgba(255,255,255,0.5)';
+  ctx.fillRect(x + 6.5, y - 4.5, 0.8, 0.8);
+  ctx.fillRect(x + 9.5, y - 4.5, 0.8, 0.8);
+
+  // Nose
+  ctx.fillStyle = '#222';
+  ctx.beginPath();
+  ctx.ellipse(x + 13, y - 2, 1.8, 1.2, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Tail wag
+  const tailAngle = wagFrame === 0 ? 0.4 : -0.4;
+  ctx.strokeStyle = '#C8860A';
+  ctx.lineWidth = 2.5;
+  ctx.lineCap = 'round';
+  ctx.beginPath();
+  ctx.moveTo(x - 8, y - 2);
+  ctx.quadraticCurveTo(
+    x - 14 + Math.sin(tailAngle) * 4, y - 8 + Math.cos(tailAngle) * 2,
+    x - 12 + Math.sin(tailAngle) * 8, y - 12 + Math.cos(tailAngle) * 4
+  );
+  ctx.stroke();
+  ctx.lineCap = 'butt';
+
+  // Legs (4 tiny dots)
+  ctx.fillStyle = '#A06808';
+  const legBob = pet.moving ? Math.sin(frame * 0.25) * 1.5 : 0;
+  ctx.beginPath(); ctx.ellipse(x - 4, y + 7 + legBob, 2, 1.5, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(x + 2, y + 7 - legBob, 2, 1.5, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(x + 5, y + 7 + legBob, 2, 1.5, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(x + 9, y + 7 - legBob, 2, 1.5, 0, 0, Math.PI * 2); ctx.fill();
+
+  // Name label: 'Pixel 🐾'
+  const label = 'Pixel 🐾';
+  const lw = label.length * 4.8 + 8;
+  ctx.fillStyle = 'rgba(10,10,15,0.55)';
+  ctx.beginPath();
+  ctx.roundRect(x - lw / 2 + 4, y - 22, lw, 10, 3);
+  ctx.fill();
+  ctx.fillStyle = '#FFFFFF';
+  ctx.font = 'bold 7px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText(label, x + 4, y - 14);
+}
+
+// ===== AGENT DRAWING =====
 function drawAgent(ctx: CanvasRenderingContext2D, x: number, y: number, agent: AgentState, anim: AnimAgent, frame: number) {
   const { state } = anim;
   const f = frame + anim.idleOffset;
@@ -1493,12 +1724,10 @@ function drawAgent(ctx: CanvasRenderingContext2D, x: number, y: number, agent: A
   drawStandingAgent(ctx, x, y, agent, f);
 }
 
-// Chibi body: small isometric box in agent color
 function drawChibiBody(ctx: CanvasRenderingContext2D, x: number, y: number, agent: AgentState, bobY: number) {
   const tw = 18, th = 10, bh = 14;
   const cy = y + bobY;
-  drawIsoBox(
-    ctx, x, cy, tw, th, bh,
+  drawIsoBox(ctx, x, cy, tw, th, bh,
     lightenColor(agent.color, 0.18),
     darkenColor(agent.color, 0.18),
     agent.color,
@@ -1506,18 +1735,15 @@ function drawChibiBody(ctx: CanvasRenderingContext2D, x: number, y: number, agen
   );
 }
 
-// Chibi head: round, skin tone, colored hair
 function drawChibiHead(ctx: CanvasRenderingContext2D, x: number, y: number, agent: AgentState, frame: number, bobY: number) {
   const headX = x;
   const headY = y - 16 + bobY;
 
-  // Head
   ctx.fillStyle = '#FDBCB4';
   ctx.beginPath();
   ctx.arc(headX, headY, 8, 0, Math.PI * 2);
   ctx.fill();
 
-  // Cheeks
   ctx.fillStyle = 'rgba(255,160,160,0.3)';
   ctx.beginPath();
   ctx.ellipse(headX - 5, headY + 2, 3, 2, 0, 0, Math.PI * 2);
@@ -1526,7 +1752,6 @@ function drawChibiHead(ctx: CanvasRenderingContext2D, x: number, y: number, agen
   ctx.ellipse(headX + 5, headY + 2, 3, 2, 0, 0, Math.PI * 2);
   ctx.fill();
 
-  // Hair (top arc in agent color)
   ctx.fillStyle = darkenColor(agent.color, 0.3);
   ctx.beginPath();
   ctx.arc(headX, headY - 1, 8, Math.PI * 0.9, Math.PI * 2.1);
@@ -1534,7 +1759,6 @@ function drawChibiHead(ctx: CanvasRenderingContext2D, x: number, y: number, agen
   ctx.closePath();
   ctx.fill();
 
-  // Hair tuft (unique per agent ID for variety)
   const tCode = agent.id.charCodeAt(0) % 3;
   if (tCode === 0) {
     ctx.beginPath();
@@ -1550,7 +1774,6 @@ function drawChibiHead(ctx: CanvasRenderingContext2D, x: number, y: number, agen
     ctx.fill();
   }
 
-  // Eyes
   const blink = Math.floor(frame) % 200 < 5;
   ctx.fillStyle = '#333';
   if (!blink) {
@@ -1571,10 +1794,8 @@ function drawSittingAgent(ctx: CanvasRenderingContext2D, x: number, y: number, a
     : Math.sin(frame * 0.02) * 0.5;
   const dy = y - 10;
 
-  drawShadow(ctx, x, dy + 24, 12, 4);
   drawChibiBody(ctx, x, dy, agent, bob);
   drawChibiHead(ctx, x, dy, agent, frame, bob);
-
   drawStatusDot(ctx, x + 11, dy - 22 + bob, agent.status, frame);
   drawAgentName(ctx, x, dy + 30, agent.name, agent.status);
 
@@ -1587,10 +1808,8 @@ function drawStandingAgent(ctx: CanvasRenderingContext2D, x: number, y: number, 
   const bob = Math.sin(frame * 0.025) * 0.6;
   const dy = y - 5;
 
-  drawShadow(ctx, x, dy + 26, 11, 4);
   drawChibiBody(ctx, x, dy, agent, bob);
   drawChibiHead(ctx, x, dy, agent, frame, bob);
-
   drawStatusDot(ctx, x + 11, dy - 22 + bob, agent.status, frame);
   drawAgentName(ctx, x, dy + 32, agent.name, agent.status);
 }
@@ -1600,11 +1819,9 @@ function drawWalkingAgent(ctx: CanvasRenderingContext2D, x: number, y: number, a
   const bob = Math.abs(Math.sin(walkPhase * Math.PI * 2)) * 2;
   const dy = y - 5;
 
-  drawShadow(ctx, x, dy + 26, 11, 4);
   drawChibiBody(ctx, x, dy, agent, -bob);
   drawChibiHead(ctx, x, dy, agent, frame, -bob);
 
-  // Walking legs — two small iso boxes
   const legOff = Math.sin(walkPhase * Math.PI * 2) * 5;
   ctx.fillStyle = darkenColor(agent.color, 0.4);
   ctx.beginPath(); ctx.ellipse(x - 4, dy + 28 - legOff / 2, 3, 2, 0, 0, Math.PI * 2); ctx.fill();
@@ -1617,18 +1834,13 @@ function drawSleepingAgent(ctx: CanvasRenderingContext2D, x: number, y: number, 
   const breathe = Math.sin(frame * 0.03) * 0.6;
   const dy = y - 5;
 
-  drawShadow(ctx, x, dy + 12, 18, 4);
-
-  // Body horizontal (iso flat box)
-  drawIsoBox(
-    ctx, x, dy + breathe, 28, 12, 8,
+  drawIsoBox(ctx, x, dy + breathe, 28, 12, 8,
     lightenColor(agent.color, 0.18),
     darkenColor(agent.color, 0.18),
     agent.color,
     'rgba(0,0,0,0.15)'
   );
 
-  // Head to the side
   ctx.fillStyle = '#FDBCB4';
   ctx.beginPath();
   ctx.arc(x - 16, dy - 2 + breathe, 7, 0, Math.PI * 2);
@@ -1640,12 +1852,10 @@ function drawSleepingAgent(ctx: CanvasRenderingContext2D, x: number, y: number, 
   ctx.closePath();
   ctx.fill();
 
-  // Eyes (closed)
   ctx.fillStyle = '#555';
   ctx.fillRect(x - 19, dy - 2 + breathe, 3, 1);
   ctx.fillRect(x - 14, dy - 2 + breathe, 3, 1);
 
-  // Blanket
   ctx.fillStyle = 'rgba(60,40,100,0.4)';
   ctx.beginPath();
   ctx.moveTo(x - 10, dy + 4 + breathe);
@@ -1655,7 +1865,6 @@ function drawSleepingAgent(ctx: CanvasRenderingContext2D, x: number, y: number, 
   ctx.closePath();
   ctx.fill();
 
-  // ZZZ
   const zFloat = Math.sin(frame * 0.04) * 3;
   ctx.fillStyle = '#9ca3af66';
   ctx.font = '7px sans-serif';
@@ -1677,17 +1886,14 @@ function drawCoffeeAgent(ctx: CanvasRenderingContext2D, x: number, y: number, ag
   const bob = Math.sin(frame * 0.025) * 0.4;
   const dy = y - 5;
 
-  drawShadow(ctx, x, dy + 26, 11, 4);
   drawChibiBody(ctx, x, dy, agent, bob);
   drawChibiHead(ctx, x, dy, agent, frame, bob);
 
-  // Coffee cup (small iso box)
   drawIsoBox(ctx, x + 14, dy + 12 + bob, 10, 5, 7, '#F5F5F0', '#D0D0C8', '#E0E0D8');
   ctx.fillStyle = '#8B6914';
   ctx.beginPath();
   ctx.ellipse(x + 14, dy + 9 + bob, 4, 2, 0, 0, Math.PI * 2);
   ctx.fill();
-  // Steam from cup
   for (let i = 0; i < 2; i++) {
     const sy = dy + 6 - i * 4 + bob - Math.sin(frame * 0.05 + i) * 2;
     ctx.fillStyle = `rgba(200,200,220,${0.25 - i * 0.08})`;
@@ -1706,17 +1912,14 @@ function drawMeetingAgent(ctx: CanvasRenderingContext2D, x: number, y: number, a
   const gesturing = Math.sin(frame * 0.06 + x * 0.1) > 0.55;
   const dy = y - 5;
 
-  drawShadow(ctx, x, dy + 26, 11, 4);
   drawChibiBody(ctx, x, dy, agent, bob);
   drawChibiHead(ctx, x, dy, agent, frame, bob);
 
-  // Raised arm when gesturing
   if (gesturing) {
     ctx.fillStyle = agent.color;
     ctx.beginPath();
     ctx.ellipse(x - 12, dy - 4 + bob, 4, 7, -0.4, 0, Math.PI * 2);
     ctx.fill();
-    // Hand
     ctx.fillStyle = '#FDBCB4';
     ctx.beginPath();
     ctx.arc(x - 14, dy - 10 + bob, 3, 0, Math.PI * 2);
@@ -1731,11 +1934,9 @@ function drawGamingAgent(ctx: CanvasRenderingContext2D, x: number, y: number, ag
   const lean = Math.sin(frame * 0.04) * 1.5;
   const dy = y - 5;
 
-  drawShadow(ctx, x, dy + 26, 11, 4);
   drawChibiBody(ctx, x + lean, dy, agent, 0);
   drawChibiHead(ctx, x + lean, dy, agent, frame, 0);
 
-  // Controller in hands
   ctx.fillStyle = '#333';
   ctx.beginPath();
   ctx.ellipse(x + 14, dy + 16, 6, 4, 0.2, 0, Math.PI * 2);
@@ -1753,7 +1954,6 @@ function drawGamingAgent(ctx: CanvasRenderingContext2D, x: number, y: number, ag
   drawAgentName(ctx, x, dy + 32, agent.name, agent.status);
 }
 
-// ===== STATUS DOT =====
 function drawStatusDot(ctx: CanvasRenderingContext2D, x: number, y: number, status: string, frame: number) {
   const color = status === 'active' ? '#22c55e' : status === 'idle' ? '#eab308' : '#4b5563';
   if (status === 'active') {
@@ -1775,7 +1975,6 @@ function drawStatusDot(ctx: CanvasRenderingContext2D, x: number, y: number, stat
   ctx.fillRect(x - 1, y - 2, 2, 1);
 }
 
-// ===== SPEECH BUBBLE =====
 function drawSpeechBubble(ctx: CanvasRenderingContext2D, x: number, y: number, text: string) {
   const maxW = 150;
   const textW = Math.min(text.length * 4.8 + 14, maxW);
@@ -1790,7 +1989,6 @@ function drawSpeechBubble(ctx: CanvasRenderingContext2D, x: number, y: number, t
   ctx.fill();
   ctx.stroke();
 
-  // Tail
   ctx.fillStyle = '#1a1a2eDD';
   ctx.beginPath();
   ctx.moveTo(x - 3, by + 14);
@@ -1804,7 +2002,6 @@ function drawSpeechBubble(ctx: CanvasRenderingContext2D, x: number, y: number, t
   ctx.fillText(text, x, by + 10);
 }
 
-// ===== AGENT NAME =====
 function drawAgentName(ctx: CanvasRenderingContext2D, x: number, y: number, name: string, status: string) {
   const w = name.length * 5.5 + 8;
   ctx.fillStyle = 'rgba(10,10,15,0.55)';
@@ -1817,5 +2014,5 @@ function drawAgentName(ctx: CanvasRenderingContext2D, x: number, y: number, name
   ctx.fillText(name, x, y);
 }
 
-// Keep AGENTS import used (suppress unused warning)
+// Keep AGENTS import used
 void AGENTS;
