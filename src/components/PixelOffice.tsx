@@ -534,6 +534,7 @@ export default function PixelOffice({ agents, activities = [], onAgentClick }: P
     drawThePit(ctx, frame);
     drawTheArcade(ctx, frame);
     drawSleepPods(ctx, frame);
+    drawDungeonProps(ctx, frame);
     drawWallDecorations(ctx, frame);
     drawTorches(ctx, frame);
     drawDayNightOverlay(ctx);
@@ -818,6 +819,290 @@ export default function PixelOffice({ agents, activities = [], onAgentClick }: P
       </div>
     </div>
   );
+}
+
+// ===== DUNGEON PROPS =====
+function drawDungeonProps(ctx: CanvasRenderingContext2D, frameCount: number) {
+  // ---- THRONE ROOM (meeting_room) ----
+  // Red carpet: thin iso parallelogram from door to throne
+  ctx.save();
+  ctx.fillStyle = '#8B0000';
+  ctx.globalAlpha = 0.75;
+  ctx.beginPath();
+  ctx.moveTo(195, 258);
+  ctx.lineTo(255, 258);
+  ctx.lineTo(255, 88);
+  ctx.lineTo(195, 88);
+  ctx.closePath();
+  ctx.fill();
+  ctx.globalAlpha = 1;
+  ctx.restore();
+
+  // Throne at x:240,y:80: base, seat, back
+  drawIsoBox(ctx, 240, 92, 40, 20, 12, '#2A1F14', darkenColor('#2A1F14', 0.3), darkenColor('#2A1F14', 0.15));
+  drawIsoBox(ctx, 240, 84, 30, 16, 8, '#5C3D1A', darkenColor('#5C3D1A', 0.25), darkenColor('#5C3D1A', 0.12));
+  drawIsoBox(ctx, 240, 72, 20, 10, 30, '#8B6914', darkenColor('#8B6914', 0.2), darkenColor('#8B6914', 0.1));
+  // Gold spikes on throne back
+  for (let s = 0; s < 3; s++) {
+    ctx.fillStyle = '#FFD700';
+    ctx.beginPath();
+    ctx.moveTo(228 + s * 7, 40);
+    ctx.lineTo(232 + s * 7, 52);
+    ctx.lineTo(224 + s * 7, 52);
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  // Two stone columns
+  drawIsoBox(ctx, 80, 60, 16, 8, 50, '#7D6B56', '#4A3D2E', '#6B5A47');
+  drawIsoBox(ctx, 400, 60, 16, 8, 50, '#7D6B56', '#4A3D2E', '#6B5A47');
+
+  // Purple banner on back wall
+  ctx.fillStyle = '#9333ea';
+  ctx.globalAlpha = 0.7;
+  ctx.beginPath();
+  ctx.moveTo(218, 8);
+  ctx.lineTo(264, 8);
+  ctx.lineTo(264, 50);
+  ctx.lineTo(241, 62);
+  ctx.lineTo(218, 50);
+  ctx.closePath();
+  ctx.fill();
+  ctx.globalAlpha = 1;
+
+  // ---- ARMORY (server_room) ----
+  // 4 weapon racks
+  const rackPositions = [[540, 60], [640, 50], [740, 60], [840, 50]] as [number, number][];
+  for (const [rx, ry] of rackPositions) {
+    drawIsoBox(ctx, rx, ry, 24, 12, 32, '#3D2B1F', darkenColor('#3D2B1F', 0.2), darkenColor('#3D2B1F', 0.1));
+    // Crossed sword lines on front face
+    ctx.strokeStyle = '#C0C0C0';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(rx - 8, ry + 20);
+    ctx.lineTo(rx + 2, ry + 42);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(rx + 2, ry + 20);
+    ctx.lineTo(rx - 8, ry + 42);
+    ctx.stroke();
+  }
+
+  // Animated rune circles
+  for (const [rcx, rcy] of [[700, 150], [800, 140]] as [number, number][]) {
+    ctx.save();
+    ctx.globalAlpha = 0.4 + Math.sin(frameCount * 0.03) * 0.3;
+    ctx.strokeStyle = '#8B00FF';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.arc(rcx, rcy, 20, 0, Math.PI * 2);
+    ctx.stroke();
+    // Inner rune lines
+    for (let k = 0; k < 6; k++) {
+      const a = (k / 6) * Math.PI * 2;
+      ctx.beginPath();
+      ctx.moveTo(rcx + Math.cos(a) * 20, rcy + Math.sin(a) * 20);
+      ctx.lineTo(rcx + Math.cos(a + Math.PI * 2 / 3) * 20, rcy + Math.sin(a + Math.PI * 2 / 3) * 20);
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+  // Ancient chest
+  drawIsoBox(ctx, 900, 180, 20, 12, 12, '#8B5E3C', darkenColor('#8B5E3C', 0.2), darkenColor('#8B5E3C', 0.1));
+  ctx.fillStyle = '#FFD700';
+  ctx.beginPath();
+  ctx.arc(906, 188, 2.5, 0, Math.PI * 2);
+  ctx.fill();
+
+  // ---- GUILD HALL (main_office) ----
+  // Stone pillars at corners
+  for (const [px, py] of [[20, 270], [920, 270], [20, 498], [920, 498]] as [number, number][]) {
+    drawIsoBox(ctx, px, py, 20, 10, 40, '#7D6B56', '#4A3D2E', '#6B5A47');
+  }
+
+  // Chandelier at (480,280): 8 flame dots in circle
+  for (let cd = 0; cd < 8; cd++) {
+    const ca = (cd / 8) * Math.PI * 2;
+    const cfx = 480 + Math.cos(ca) * 20;
+    const cfy = 285 + Math.sin(ca) * 8;
+    const cpulse = 0.6 + Math.sin(frameCount * 0.06 + cd) * 0.4;
+    ctx.fillStyle = `rgba(255,140,0,${cpulse})`;
+    ctx.beginPath();
+    ctx.arc(cfx, cfy, 4, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  // Chandelier chain
+  ctx.strokeStyle = '#8B7355';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(480, 265);
+  ctx.lineTo(480, 278);
+  ctx.stroke();
+
+  // Notice board
+  drawIsoBox(ctx, 880, 300, 40, 4, 30, '#C4A882', darkenColor('#C4A882', 0.15), darkenColor('#C4A882', 0.08));
+  ctx.fillStyle = '#8B5E3C';
+  ctx.fillRect(866, 298, 20, 1.5);
+  ctx.fillRect(866, 302, 16, 1.5);
+  ctx.fillRect(866, 306, 12, 1.5);
+
+  // Quills on desks
+  const deskPositions = [
+    [80, 310], [220, 310], [360, 310], [520, 310], [680, 310], [840, 310],
+    [140, 420], [300, 420], [460, 420], [620, 420], [780, 420],
+  ];
+  for (const [dx, dy] of deskPositions) {
+    ctx.strokeStyle = '#F5F0E0';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(dx + 5, dy - 8);
+    ctx.lineTo(dx + 12, dy - 2);
+    ctx.stroke();
+  }
+
+  // ---- TAVERN (kitchen) ----
+  // Fireplace at (20,580)
+  drawIsoBox(ctx, 20, 578, 60, 30, 20, '#2A1F14', darkenColor('#2A1F14', 0.25), darkenColor('#2A1F14', 0.12));
+  // Fire inside
+  const fp = (Math.sin(frameCount * 0.08) + 1) / 2;
+  ctx.fillStyle = `rgba(255,140,0,${0.7 + fp * 0.3})`;
+  ctx.beginPath();
+  ctx.ellipse(20, 574, 10 * (1 + fp * 0.1), 8 * (1 + fp * 0.1), 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = `rgba(255,220,0,${0.6 + fp * 0.3})`;
+  ctx.beginPath();
+  ctx.ellipse(20, 570, 6, 6, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = '#FFFFFF88';
+  ctx.beginPath();
+  ctx.ellipse(20, 567, 2.5, 3, 0, 0, Math.PI * 2);
+  ctx.fill();
+  // Fire glow
+  const fireGrad = ctx.createRadialGradient(20, 578, 5, 20, 578, 70);
+  fireGrad.addColorStop(0, 'rgba(255,100,0,0.18)');
+  fireGrad.addColorStop(1, 'rgba(255,100,0,0)');
+  ctx.fillStyle = fireGrad;
+  ctx.fillRect(-30, 528, 120, 120);
+
+  // 3 barrels
+  for (const [bx, by] of [[160, 568], [188, 588], [216, 573]] as [number, number][]) {
+    drawIsoBox(ctx, bx, by, 18, 10, 20, '#8B5E3C', darkenColor('#8B5E3C', 0.2), darkenColor('#8B5E3C', 0.1));
+    // Oval top
+    ctx.fillStyle = darkenColor('#8B5E3C', 0.15);
+    ctx.beginPath();
+    ctx.ellipse(bx, by - 2, 9, 5, 0, 0, Math.PI * 2);
+    ctx.fill();
+    // Barrel hoops
+    ctx.strokeStyle = '#5C3D1A';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.ellipse(bx, by + 5, 9, 3, 0, 0, Math.PI * 2);
+    ctx.stroke();
+  }
+
+  // Tavern table
+  drawIsoBox(ctx, 120, 638, 60, 30, 8, '#C4956A', darkenColor('#C4956A', 0.2), darkenColor('#C4956A', 0.1));
+
+  // ---- TRAINING GROUNDS (game_room) ----
+  // Training dummy
+  ctx.strokeStyle = '#8B6914';
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.moveTo(310, 610);
+  ctx.lineTo(310, 558);
+  ctx.stroke();
+  // Dummy head/torso
+  drawIsoBox(ctx, 310, 574, 16, 10, 20, '#C8A050', darkenColor('#C8A050', 0.2), darkenColor('#C8A050', 0.1));
+  ctx.fillStyle = '#A0783C';
+  ctx.beginPath();
+  ctx.arc(310, 562, 7, 0, Math.PI * 2);
+  ctx.fill();
+  // Arms cross
+  ctx.strokeStyle = '#8B6914';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(298, 576);
+  ctx.lineTo(322, 576);
+  ctx.stroke();
+
+  // 2 archery targets
+  for (const [tx, ty] of [[540, 545], [560, 565]] as [number, number][]) {
+    ctx.fillStyle = '#CC0000';
+    ctx.beginPath();
+    ctx.arc(tx, ty, 12, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#FFFFFF';
+    ctx.beginPath();
+    ctx.arc(tx, ty, 8, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#CC0000';
+    ctx.beginPath();
+    ctx.arc(tx, ty, 4, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  // Sparring ring ellipse
+  ctx.strokeStyle = '#8B6914';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.ellipse(400, 620, 60, 20, 0, 0, Math.PI * 2);
+  ctx.stroke();
+
+  // ---- DUNGEON CELLS (rest_room) ----
+  // Iron bar dividers at x=630, 710, 790
+  for (const bx of [630, 710, 790]) {
+    ctx.strokeStyle = '#666666';
+    ctx.lineWidth = 2.5;
+    for (let bar = 0; bar < 4; bar++) {
+      ctx.beginPath();
+      ctx.moveTo(bx + bar * 7, 525);
+      ctx.lineTo(bx + bar * 7, 715);
+      ctx.stroke();
+    }
+    // Horizontal crossbar
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(bx, 590);
+    ctx.lineTo(bx + 21, 590);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(bx, 650);
+    ctx.lineTo(bx + 21, 650);
+    ctx.stroke();
+  }
+
+  // Cobweb in corner
+  ctx.strokeStyle = 'rgba(150,150,150,0.4)';
+  ctx.lineWidth = 0.8;
+  for (let cw = 0; cw < 3; cw++) {
+    ctx.beginPath();
+    ctx.moveTo(600, 530);
+    ctx.bezierCurveTo(
+      600 + cw * 8, 530 + cw * 5,
+      620 + cw * 4, 535 + cw * 8,
+      618 + cw * 6, 548 + cw * 4
+    );
+    ctx.stroke();
+  }
+
+  // Tiny rat at (920,700)
+  ctx.fillStyle = '#4A3A2A';
+  ctx.beginPath();
+  ctx.ellipse(920, 700, 8, 5, 0.2, 0, Math.PI * 2);
+  ctx.fill();
+  // Tail
+  ctx.strokeStyle = '#3A2A1A';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(912, 701);
+  ctx.quadraticCurveTo(905, 695, 908, 688);
+  ctx.stroke();
+  // Eye
+  ctx.fillStyle = '#000000';
+  ctx.beginPath();
+  ctx.arc(927, 697, 1, 0, Math.PI * 2);
+  ctx.fill();
 }
 
 // ===== SHADOW =====
