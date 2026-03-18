@@ -103,12 +103,12 @@ interface RoomDef {
 }
 
 const ROOMS: RoomDef[] = [
-  { id: 'meeting_room', label: 'WAR ROOM',    emoji: '⚔️',  x: 0,   y: 0,   w: 480, h: 260, floorColor1: '#2C2840', floorColor2: '#252035', tileSize: 28 },
-  { id: 'server_room',  label: 'THE VAULT',   emoji: '🔒',  x: 480, y: 0,   w: 480, h: 260, floorColor1: '#1A2440', floorColor2: '#151E38', tileSize: 24 },
-  { id: 'main_office',  label: 'THE FLOOR',   emoji: '🏢',  x: 0,   y: 260, w: 960, h: 260, floorColor1: '#F5E6D3', floorColor2: '#EDD9C0', tileSize: 32 },
-  { id: 'kitchen',      label: 'THE PIT',     emoji: '☕',  x: 0,   y: 520, w: 240, h: 200, floorColor1: '#F0DCC8', floorColor2: '#E8D0B8', tileSize: 26 },
-  { id: 'game_room',    label: 'THE ARCADE',  emoji: '🕹️', x: 240, y: 520, w: 340, h: 200, floorColor1: '#1E1A2E', floorColor2: '#181428', tileSize: 30 },
-  { id: 'rest_room',    label: 'SLEEP PODS',  emoji: '🛸',  x: 580, y: 520, w: 380, h: 200, floorColor1: '#0F0F1A', floorColor2: '#0A0A14', tileSize: 28 },
+  { id: 'meeting_room', label: 'THRONE ROOM',   emoji: '👑',  x: 0,   y: 0,   w: 480, h: 260, floorColor1: '#8B7355', floorColor2: '#7A6548', tileSize: 28 },
+  { id: 'server_room',  label: 'THE ARMORY',   emoji: '⚔️',  x: 480, y: 0,   w: 480, h: 260, floorColor1: '#8B7355', floorColor2: '#7A6548', tileSize: 24 },
+  { id: 'main_office',  label: 'GUILD HALL',   emoji: '🏰',  x: 0,   y: 260, w: 960, h: 260, floorColor1: '#8B7355', floorColor2: '#7A6548', tileSize: 32 },
+  { id: 'kitchen',      label: 'THE TAVERN',   emoji: '🍺',  x: 0,   y: 520, w: 240, h: 200, floorColor1: '#8B7355', floorColor2: '#7A6548', tileSize: 26 },
+  { id: 'game_room',    label: 'TRAINING',     emoji: '🗡️', x: 240, y: 520, w: 340, h: 200, floorColor1: '#8B7355', floorColor2: '#7A6548', tileSize: 30 },
+  { id: 'rest_room',    label: 'DUNGEON CELLS', emoji: '🔒',  x: 580, y: 520, w: 380, h: 200, floorColor1: '#8B7355', floorColor2: '#7A6548', tileSize: 28 },
 ];
 
 function getRoomDef(id: RoomId): RoomDef {
@@ -518,7 +518,7 @@ export default function PixelOffice({ agents, activities = [], onAgentClick }: P
   const drawFrame = useCallback((ctx: CanvasRenderingContext2D, frame: number) => {
     ctx.imageSmoothingEnabled = true;
 
-    ctx.fillStyle = '#1a1a2e';
+    ctx.fillStyle = '#1A1208';
     ctx.fillRect(0, 0, W, H);
 
     for (const room of ROOMS) drawRoomFloor(ctx, room);
@@ -535,6 +535,7 @@ export default function PixelOffice({ agents, activities = [], onAgentClick }: P
     drawTheArcade(ctx, frame);
     drawSleepPods(ctx, frame);
     drawWallDecorations(ctx, frame);
+    drawTorches(ctx, frame);
     drawDayNightOverlay(ctx);
     drawClock(ctx);
 
@@ -729,6 +730,25 @@ export default function PixelOffice({ agents, activities = [], onAgentClick }: P
 
     drawAmbient(ctx, frame);
     if (!isMobile) drawMiniMap(ctx, agents, animMap);
+
+    // Heavy dungeon vignette
+    const vig = ctx.createRadialGradient(W / 2, H / 2, H * 0.3, W / 2, H / 2, H * 0.9);
+    vig.addColorStop(0, 'rgba(0,0,0,0)');
+    vig.addColorStop(1, 'rgba(0,0,0,0.55)');
+    ctx.fillStyle = vig;
+    ctx.fillRect(0, 0, W, H);
+
+    // Floating dust motes
+    for (let i = 0; i < 6; i++) {
+      const dmx = W * 0.1 + i * (W / 6) + Math.sin(frame * 0.01 + i) * 30;
+      const dmy = ((H * 0.9 - (frame * 0.18 + i * (H / 6))) % H + H) % H;
+      ctx.globalAlpha = 0.25;
+      ctx.fillStyle = '#FFFFFF';
+      ctx.beginPath();
+      ctx.arc(dmx, dmy, 1.5, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
   }, [agents, getTargetPosition, isMobile]);
 
   useEffect(() => {
@@ -808,6 +828,66 @@ function drawShadow(ctx: CanvasRenderingContext2D, x: number, y: number, rx: num
   ctx.fill();
 }
 
+// ===== TORCH =====
+function drawTorch(ctx: CanvasRenderingContext2D, cx: number, cy: number, frameCount: number) {
+  // Floor light glow
+  const floorGrad = ctx.createRadialGradient(cx, cy + 18, 2, cx, cy + 18, 50);
+  floorGrad.addColorStop(0, 'rgba(255,140,0,0.10)');
+  floorGrad.addColorStop(1, 'rgba(255,140,0,0)');
+  ctx.fillStyle = floorGrad;
+  ctx.fillRect(cx - 50, cy - 5, 100, 70);
+
+  // Wall bracket
+  drawIsoBox(ctx, cx, cy, 8, 4, 6, '#3D2B1F', darkenColor('#3D2B1F', 0.25), darkenColor('#3D2B1F', 0.12));
+
+  const flicker = 1 + Math.sin(frameCount * 0.08) * 0.15;
+
+  ctx.save();
+  ctx.shadowBlur = 15 + Math.sin(frameCount * 0.1) * 5;
+  ctx.shadowColor = '#FF8C00';
+
+  // Bottom flame — orange
+  ctx.fillStyle = '#FF8C00';
+  ctx.beginPath();
+  ctx.ellipse(cx, cy - 8, 6 * flicker, 5 * flicker, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Middle flame — yellow
+  ctx.fillStyle = '#FFD700';
+  ctx.beginPath();
+  ctx.ellipse(cx, cy - 12, 4 * flicker, 4 * flicker, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Top flame — white core
+  ctx.fillStyle = '#FFFFFF';
+  ctx.beginPath();
+  ctx.ellipse(cx, cy - 15, 2 * flicker, 3 * flicker, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.restore();
+}
+
+// ===== TORCHES PLACEMENT =====
+function drawTorches(ctx: CanvasRenderingContext2D, frame: number) {
+  const torchPositions: [number, number][] = [
+    // meeting_room
+    [60, 28], [420, 28],
+    // server_room
+    [550, 28], [900, 28],
+    // main_office
+    [110, 278], [850, 278],
+    // kitchen
+    [18, 538], [210, 538],
+    // game_room
+    [270, 538], [560, 538],
+    // rest_room
+    [610, 538], [935, 538],
+  ];
+  for (const [tx, ty] of torchPositions) {
+    drawTorch(ctx, tx, ty, frame);
+  }
+}
+
 // ===== ISOMETRIC FLOOR =====
 function drawRoomFloor(ctx: CanvasRenderingContext2D, room: RoomDef) {
   const { x: rx, y: ry, w: rw, h: rh, floorColor1, floorColor2 } = room;
@@ -849,6 +929,25 @@ function drawRoomFloor(ctx: CanvasRenderingContext2D, room: RoomDef) {
       ctx.strokeStyle = 'rgba(0,0,0,0.06)';
       ctx.lineWidth = 0.5;
       ctx.stroke();
+
+      // Stone crack variant
+      if ((c * 7 + r * 13) % 5 === 0) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.moveTo(sx, sy - thh);
+        ctx.lineTo(sx + twh, sy);
+        ctx.lineTo(sx, sy + thh);
+        ctx.lineTo(sx - twh, sy);
+        ctx.closePath();
+        ctx.clip();
+        ctx.strokeStyle = '#5C4A35';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(sx - twh * 0.4, sy - thh * 0.5);
+        ctx.lineTo(sx + twh * 0.3, sy + thh * 0.6);
+        ctx.stroke();
+        ctx.restore();
+      }
     }
   }
 
@@ -872,9 +971,9 @@ function drawRoomFloor(ctx: CanvasRenderingContext2D, room: RoomDef) {
 
 // ===== WALLS =====
 function drawWalls(ctx: CanvasRenderingContext2D) {
-  const wallFace = '#D4C4A8';
-  const wallTop  = '#E8D5BC';
-  const wallEdge = '#C4A882';
+  const wallFace = '#7D6B56';
+  const wallTop  = '#9B8970';
+  const wallEdge = '#4A3D2E';
   const wallH = 14;
 
   ctx.strokeStyle = wallEdge;
@@ -919,23 +1018,23 @@ function drawWalls(ctx: CanvasRenderingContext2D) {
 
 // ===== DOORWAYS =====
 function drawDoorways(ctx: CanvasRenderingContext2D) {
-  const wallFace = '#D4C4A8';
+  const wallFace = '#6B5A47';
   for (const door of DOORWAYS) {
     ctx.fillStyle = wallFace;
     ctx.fillRect(door.x, door.y, door.w, door.h + 4);
-    ctx.fillStyle = '#B89E82';
+    ctx.fillStyle = '#3D2E1E';
     ctx.fillRect(door.x - 2, door.y, 4, door.h + 4);
     ctx.fillRect(door.x + door.w - 2, door.y, 4, door.h + 4);
-    ctx.fillStyle = '#C8B496';
+    ctx.fillStyle = '#594838';
     ctx.fillRect(door.x + 2, door.y + 2, door.w - 4, door.h);
-    ctx.fillStyle = '#A89070';
+    ctx.fillStyle = '#2E2218';
     ctx.fillRect(door.x, door.y + door.h + 2, door.w, 2);
   }
 }
 
 // ===== BASEBOARDS =====
 function drawBaseboards(ctx: CanvasRenderingContext2D) {
-  ctx.fillStyle = '#C4A882';
+  ctx.fillStyle = '#4A3D2E';
   ctx.fillRect(0, 256, W, 3);
   ctx.fillRect(0, 516, W, 3);
   ctx.fillRect(0, H - 3, 240, 3);
@@ -946,12 +1045,12 @@ function drawBaseboards(ctx: CanvasRenderingContext2D) {
 // ===== ROOM LABELS (per-room colors) =====
 function drawRoomLabel(ctx: CanvasRenderingContext2D, room: RoomDef) {
   const labelColors: Record<RoomId, string> = {
-    main_office:  'rgba(120,100,80,0.55)',
-    meeting_room: 'rgba(220,80,60,0.85)',
-    server_room:  'rgba(0,229,255,0.75)',
-    kitchen:      'rgba(160,110,60,0.6)',
-    game_room:    'rgba(255,0,255,0.85)',
-    rest_room:    'rgba(128,255,204,0.75)',
+    main_office:  'rgba(240,228,210,0.75)',
+    meeting_room: '#FFD700',
+    server_room:  '#00E5FF',
+    kitchen:      '#FFB347',
+    game_room:    '#FF69B4',
+    rest_room:    '#80FFCC',
   };
   ctx.fillStyle = labelColors[room.id] || 'rgba(120,100,80,0.5)';
   ctx.font = 'bold 10px sans-serif';
