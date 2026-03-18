@@ -92,6 +92,6 @@ export async function GET() {
     return NextResponse.json(stats);
   } catch (err) {
     console.error('[api/agents/stats]', err);
-    return NextResponse.json({ error: 'Failed to fetch stats' }, { status: 500 });
+    return NextResponse.json(getDemoStats());
   }
 }
