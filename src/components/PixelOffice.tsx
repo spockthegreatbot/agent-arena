@@ -2018,26 +2018,26 @@ function drawPixelDog(ctx: CanvasRenderingContext2D, pet: PetState, frame: numbe
   ctx.ellipse(x, y + 8, 12, 4, 0, 0, Math.PI * 2);
   ctx.fill();
 
-  // Body
-  ctx.fillStyle = '#C8860A';
+  // Body — dungeon hound brown
+  ctx.fillStyle = '#8B4513';
   ctx.beginPath();
   ctx.ellipse(x, y, 9, 6, 0, 0, Math.PI * 2);
   ctx.fill();
 
   // Belly lighter patch
-  ctx.fillStyle = '#DCA840';
+  ctx.fillStyle = '#A0522D';
   ctx.beginPath();
   ctx.ellipse(x + 1, y + 1, 5, 3, 0, 0, Math.PI * 2);
   ctx.fill();
 
   // Head (front-right of body)
-  ctx.fillStyle = '#D4920C';
+  ctx.fillStyle = '#9B4A1A';
   ctx.beginPath();
   ctx.arc(x + 8, y - 3, 6, 0, Math.PI * 2);
   ctx.fill();
 
   // Floppy ears
-  ctx.fillStyle = '#8B5E0A';
+  ctx.fillStyle = '#5C2E0A';
   ctx.beginPath();
   ctx.ellipse(x + 5, y + 2, 3, 5, -0.4, 0, Math.PI * 2);
   ctx.fill();
@@ -2045,13 +2045,30 @@ function drawPixelDog(ctx: CanvasRenderingContext2D, pet: PetState, frame: numbe
   ctx.ellipse(x + 11, y + 1, 3, 5, 0.4, 0, Math.PI * 2);
   ctx.fill();
 
-  // Eyes
+  // Spiked collar
+  ctx.fillStyle = '#1A1A1A';
+  ctx.fillRect(x + 2, y + 1, 12, 4);
+  ctx.fillStyle = '#666666';
+  for (let sp = 0; sp < 3; sp++) {
+    ctx.beginPath();
+    ctx.moveTo(x + 4 + sp * 4, y + 1);
+    ctx.lineTo(x + 6 + sp * 4, y - 2);
+    ctx.lineTo(x + 8 + sp * 4, y + 1);
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  // Eyes with glowing effect
+  ctx.save();
+  ctx.shadowBlur = 6;
+  ctx.shadowColor = '#FF8C00';
   ctx.fillStyle = '#111';
   ctx.beginPath(); ctx.arc(x + 7, y - 4, 1.2, 0, Math.PI * 2); ctx.fill();
   ctx.beginPath(); ctx.arc(x + 10, y - 4, 1.2, 0, Math.PI * 2); ctx.fill();
-  ctx.fillStyle = 'rgba(255,255,255,0.5)';
-  ctx.fillRect(x + 6.5, y - 4.5, 0.8, 0.8);
-  ctx.fillRect(x + 9.5, y - 4.5, 0.8, 0.8);
+  ctx.restore();
+  ctx.fillStyle = 'rgba(255,140,0,0.6)';
+  ctx.beginPath(); ctx.arc(x + 7, y - 4, 0.8, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.arc(x + 10, y - 4, 0.8, 0, Math.PI * 2); ctx.fill();
 
   // Nose
   ctx.fillStyle = '#222';
@@ -2061,7 +2078,7 @@ function drawPixelDog(ctx: CanvasRenderingContext2D, pet: PetState, frame: numbe
 
   // Tail wag
   const tailAngle = wagFrame === 0 ? 0.4 : -0.4;
-  ctx.strokeStyle = '#C8860A';
+  ctx.strokeStyle = '#8B4513';
   ctx.lineWidth = 2.5;
   ctx.lineCap = 'round';
   ctx.beginPath();
@@ -2074,7 +2091,7 @@ function drawPixelDog(ctx: CanvasRenderingContext2D, pet: PetState, frame: numbe
   ctx.lineCap = 'butt';
 
   // Legs (4 tiny dots)
-  ctx.fillStyle = '#A06808';
+  ctx.fillStyle = '#6B3410';
   const legBob = pet.moving ? Math.sin(frame * 0.25) * 1.5 : 0;
   ctx.beginPath(); ctx.ellipse(x - 4, y + 7 + legBob, 2, 1.5, 0, 0, Math.PI * 2); ctx.fill();
   ctx.beginPath(); ctx.ellipse(x + 2, y + 7 - legBob, 2, 1.5, 0, 0, Math.PI * 2); ctx.fill();
@@ -2172,6 +2189,164 @@ function drawChibiHead(ctx: CanvasRenderingContext2D, x: number, y: number, agen
   }
 }
 
+function drawFantasyHat(ctx: CanvasRenderingContext2D, x: number, y: number, accessory: string, bobY: number) {
+  const hx = x;
+  const hy = y - 24 + bobY;
+  switch (accessory) {
+    case 'crown': {
+      // 3 gold triangles
+      ctx.fillStyle = '#FFD700';
+      for (let t = 0; t < 3; t++) {
+        ctx.beginPath();
+        ctx.moveTo(hx - 6 + t * 6, hy);
+        ctx.lineTo(hx - 3 + t * 6, hy - 6);
+        ctx.lineTo(hx + t * 6, hy);
+        ctx.closePath();
+        ctx.fill();
+      }
+      break;
+    }
+    case 'glasses': {
+      // Knight helmet dome
+      ctx.fillStyle = '#A0A0A0';
+      ctx.beginPath();
+      ctx.ellipse(hx, hy - 2, 9, 6, 0, Math.PI, 0);
+      ctx.fill();
+      ctx.strokeStyle = '#707070';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(hx - 9, hy - 2);
+      ctx.lineTo(hx + 9, hy - 2);
+      ctx.stroke();
+      break;
+    }
+    case 'badge': {
+      // Hooded cloak triangle behind body
+      ctx.fillStyle = '#1A1A2E';
+      ctx.beginPath();
+      ctx.moveTo(hx - 10, hy + 8);
+      ctx.lineTo(hx + 10, hy + 8);
+      ctx.lineTo(hx, hy - 8);
+      ctx.closePath();
+      ctx.fill();
+      break;
+    }
+    case 'visor': {
+      // Wide brim merchant hat
+      ctx.fillStyle = '#8B5E3C';
+      ctx.beginPath();
+      ctx.ellipse(hx, hy, 12, 3, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.ellipse(hx, hy - 4, 6, 6, 0, 0, Math.PI * 2);
+      ctx.fill();
+      break;
+    }
+    case 'monocle': {
+      // Wizard hat — tall pointed triangle
+      ctx.fillStyle = '#1A1A5E';
+      ctx.beginPath();
+      ctx.moveTo(hx - 8, hy);
+      ctx.lineTo(hx + 8, hy);
+      ctx.lineTo(hx, hy - 16);
+      ctx.closePath();
+      ctx.fill();
+      // Star accent
+      ctx.fillStyle = '#FFD700';
+      ctx.beginPath();
+      ctx.arc(hx - 2, hy - 8, 1.5, 0, Math.PI * 2);
+      ctx.fill();
+      break;
+    }
+    case 'bowtie': {
+      // Two wing triangles — fairy/bowtie
+      ctx.fillStyle = '#FFB6C1';
+      ctx.beginPath();
+      ctx.moveTo(hx - 12, hy - 6);
+      ctx.lineTo(hx - 4, hy - 2);
+      ctx.lineTo(hx - 12, hy + 2);
+      ctx.closePath();
+      ctx.fill();
+      ctx.beginPath();
+      ctx.moveTo(hx + 12, hy - 6);
+      ctx.lineTo(hx + 4, hy - 2);
+      ctx.lineTo(hx + 12, hy + 2);
+      ctx.closePath();
+      ctx.fill();
+      break;
+    }
+    case 'headphones': {
+      // Bard hat — wide floppy
+      ctx.fillStyle = '#8B5E3C';
+      ctx.beginPath();
+      ctx.ellipse(hx, hy, 11, 3, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.ellipse(hx, hy - 3, 7, 5, 0, 0, Math.PI * 2);
+      ctx.fill();
+      // Feather
+      ctx.strokeStyle = '#E8D5A0';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(hx + 6, hy - 3);
+      ctx.lineTo(hx + 14, hy - 10);
+      ctx.stroke();
+      break;
+    }
+    case 'cap': {
+      // Ranger hood — pointed green triangle
+      ctx.fillStyle = '#228B22';
+      ctx.beginPath();
+      ctx.moveTo(hx - 8, hy);
+      ctx.lineTo(hx + 8, hy);
+      ctx.lineTo(hx + 2, hy - 10);
+      ctx.closePath();
+      ctx.fill();
+      break;
+    }
+    case 'antenna': {
+      // Round glasses — two circles
+      ctx.strokeStyle = '#888888';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.arc(hx - 4, hy, 3, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(hx + 4, hy, 3, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(hx - 1, hy);
+      ctx.lineTo(hx + 1, hy);
+      ctx.stroke();
+      break;
+    }
+    case 'hat': {
+      // Noble band hat
+      ctx.fillStyle = '#DAA520';
+      ctx.beginPath();
+      ctx.ellipse(hx, hy, 10, 2.5, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#B8860B';
+      ctx.fillRect(hx - 6, hy - 6, 12, 6);
+      break;
+    }
+    case 'scarf': {
+      // Tiny pouch at body base
+      ctx.fillStyle = '#8B6914';
+      ctx.beginPath();
+      ctx.ellipse(hx + 10, hy + 14, 5, 4, 0.3, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = '#5C4A10';
+      ctx.lineWidth = 0.8;
+      ctx.beginPath();
+      ctx.moveTo(hx + 6, hy + 14);
+      ctx.lineTo(hx - 2, hy + 10);
+      ctx.stroke();
+      break;
+    }
+  }
+}
+
 function drawSittingAgent(ctx: CanvasRenderingContext2D, x: number, y: number, agent: AgentState, frame: number) {
   const bob = agent.status === 'active'
     ? Math.sin(frame * 0.08) * 1.5
@@ -2180,6 +2355,7 @@ function drawSittingAgent(ctx: CanvasRenderingContext2D, x: number, y: number, a
 
   drawChibiBody(ctx, x, dy, agent, bob);
   drawChibiHead(ctx, x, dy, agent, frame, bob);
+  if (agent.accessory) drawFantasyHat(ctx, x, dy, agent.accessory, bob);
   drawStatusDot(ctx, x + 11, dy - 22 + bob, agent.status, frame);
   drawAgentName(ctx, x, dy + 30, agent.name, agent.status);
 
@@ -2194,6 +2370,7 @@ function drawStandingAgent(ctx: CanvasRenderingContext2D, x: number, y: number, 
 
   drawChibiBody(ctx, x, dy, agent, bob);
   drawChibiHead(ctx, x, dy, agent, frame, bob);
+  if (agent.accessory) drawFantasyHat(ctx, x, dy, agent.accessory, bob);
   drawStatusDot(ctx, x + 11, dy - 22 + bob, agent.status, frame);
   drawAgentName(ctx, x, dy + 32, agent.name, agent.status);
 }
@@ -2205,6 +2382,7 @@ function drawWalkingAgent(ctx: CanvasRenderingContext2D, x: number, y: number, a
 
   drawChibiBody(ctx, x, dy, agent, -bob);
   drawChibiHead(ctx, x, dy, agent, frame, -bob);
+  if (agent.accessory) drawFantasyHat(ctx, x, dy, agent.accessory, -bob);
 
   const legOff = Math.sin(walkPhase * Math.PI * 2) * 5;
   ctx.fillStyle = darkenColor(agent.color, 0.4);
@@ -2272,6 +2450,7 @@ function drawCoffeeAgent(ctx: CanvasRenderingContext2D, x: number, y: number, ag
 
   drawChibiBody(ctx, x, dy, agent, bob);
   drawChibiHead(ctx, x, dy, agent, frame, bob);
+  if (agent.accessory) drawFantasyHat(ctx, x, dy, agent.accessory, bob);
 
   drawIsoBox(ctx, x + 14, dy + 12 + bob, 10, 5, 7, '#F5F5F0', '#D0D0C8', '#E0E0D8');
   ctx.fillStyle = '#8B6914';
@@ -2298,6 +2477,7 @@ function drawMeetingAgent(ctx: CanvasRenderingContext2D, x: number, y: number, a
 
   drawChibiBody(ctx, x, dy, agent, bob);
   drawChibiHead(ctx, x, dy, agent, frame, bob);
+  if (agent.accessory) drawFantasyHat(ctx, x, dy, agent.accessory, bob);
 
   if (gesturing) {
     ctx.fillStyle = agent.color;
@@ -2320,6 +2500,7 @@ function drawGamingAgent(ctx: CanvasRenderingContext2D, x: number, y: number, ag
 
   drawChibiBody(ctx, x + lean, dy, agent, 0);
   drawChibiHead(ctx, x + lean, dy, agent, frame, 0);
+  if (agent.accessory) drawFantasyHat(ctx, x + lean, dy, agent.accessory, 0);
 
   ctx.fillStyle = '#333';
   ctx.beginPath();
