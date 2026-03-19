@@ -38,6 +38,7 @@ Agency HQ is a real-time visualization of your AI agent team. Each agent is a pi
 - **Timeline bar** — 24-hour activity heatmap
 - **Day/night cycle** — ambient lighting changes with time of day
 - **Smart room assignment** — active → office/meeting, idle 5-15min → kitchen, idle 15min+ → game room, offline → rest room
+- **Pixel the dog** 🐕 — office dog who wanders between rooms, follows active agents, and leaves pawprint trails
 - **Demo mode** — works on Vercel without OpenClaw, shows a simulated team building a landing page
 - **Mobile responsive** — stacked layout on mobile, side-by-side on desktop
 
@@ -127,6 +128,8 @@ Set `ARENA_MODE=live` in `.env.local`. The app reads from:
 - OpenClaw installed and running
 - Agent session files in `~/.openclaw/agents/`
 - Node.js process has read access to those directories
+
+**Privacy note:** Live mode reads your local OpenClaw session files to show real agent activity. Only short truncated snippets (120 chars max) are surfaced in the activity feed — never full messages, API keys, or sensitive data. If privacy is a concern, run in demo mode (`ARENA_MODE=demo`).
 
 ---
 
